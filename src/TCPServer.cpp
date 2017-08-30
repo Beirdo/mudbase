@@ -22,7 +22,7 @@ namespace mudbase {
 #if defined(SIGQUIT)
         signals_.add(SIGQUIT);
 #endif // defined(SIGQUIT)
-        signals_.async_wait(boost::bind(&server::handle_stop, this));
+        signals_.async_wait(boost::bind(&TCPServer::handle_stop, this));
 
         // Open the acceptor with the option to reuse the address (i.e. SO_REUSEADDR).
         boost::asio::ip::tcp::resolver resolver(io_service_);
@@ -45,8 +45,7 @@ namespace mudbase {
     }
 
     void TCPServer::start_accept() {
-        new_connection_.reset(new TCPConnection(io_service_,
-                                                connection_manager_, request_handler_));
+        new_connection_.reset(new TCPConnection(io_service_, connection_manager_));
         acceptor_.async_accept(new_connection_->socket(),
                                boost::bind(&TCPServer::handle_accept, this,
                                            boost::asio::placeholders::error));

@@ -4,16 +4,16 @@
 
 #include "TCPConnection.h"
 #include <vector>
+#include <deque>
+#include <string>
 #include <boost/bind.hpp>
 #include "TCPConnectionManager.h"
-#include "request_handler.hpp"
 
 namespace mudbase {
-    TCPConnection::TCPConnection(boost::asio::io_service &io_service,
-                                 TCPConnectionManager &manager, request_handler &handler)
+    TCPConnection::TCPConnection(boost::asio::io_service &io_service, TCPConnectionManager &manager)
             : socket_(io_service),
-              connection_manager_(manager),
-              request_handler_(handler) {
+              connection_manager_(manager) {
+        partial_string_.clear();
     }
 
     boost::asio::ip::tcp::socket &TCPConnection::socket() {
@@ -31,29 +31,46 @@ namespace mudbase {
         socket_.close();
     }
 
+    /// Deque of typed in lines (input)
+    std::deque<std::string>& TCPConnection::inputQueue() {
+        return input_queue_;
+    }
+
+    /// Deque of response data (output)
+    std::deque<std::string>& TCPConnection::outputQueue() {
+        return output_queue_;
+    }
+
     void TCPConnection::handle_read(const boost::system::error_code &e,
                                     std::size_t bytes_transferred) {
         if (!e) {
-            boost::tribool result;
-            boost::tie(result, boost::tuples::ignore) = request_parser_.parse(
-                    request_, buffer_.data(), buffer_.data() + bytes_transferred);
+            // Iterate the input buffer, splitting off lines, which get queued
+            char *begin = buffer_.data();
+            char *end = buffer_.data() + bytes_transferred;
+            char *ch = begin;
 
-            if (result) {
-                request_handler_.handle_request(request_, reply_);
-                boost::asio::async_write(socket_, reply_.to_buffers(),
-                                         boost::bind(&TCPConnection::handle_write, shared_from_this(),
-                                                     boost::asio::placeholders::error));
-            } else if (!result) {
-                reply_ = reply::stock_reply(reply::bad_request);
-                boost::asio::async_write(socket_, reply_.to_buffers(),
-                                         boost::bind(&TCPConnection::handle_write, shared_from_this(),
-                                                     boost::asio::placeholders::error));
-            } else {
-                socket_.async_read_some(boost::asio::buffer(buffer_),
-                                        boost::bind(&TCPConnection::handle_read, shared_from_this(),
-                                                    boost::asio::placeholders::error,
-                                                    boost::asio::placeholders::bytes_transferred));
+            while (ch != end) {
+                if (*ch++ == '\n') {
+                    std::string str;
+                    if (!partial_string_.empty()) {
+                        str = partial_string_;
+                        partial_string_.clear();
+                    }
+                    str.append(std::string(begin, ch - begin - 1));
+                    input_queue_.push_back(str);
+                    if (*ch == '\r') {
+                        ch++;
+                    }
+                    begin = ch;
+                }
             }
+
+            if (ch != begin) {
+                partial_string_ = std::string(begin, ch - begin);
+            }
+
+            // Start reading again
+            start();
         } else if (e != boost::asio::error::operation_aborted) {
             connection_manager_.stop(shared_from_this());
         }

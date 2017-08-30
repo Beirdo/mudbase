@@ -7,15 +7,12 @@
 
 #include <iostream>
 #include <string>
+#include <deque>
 #include <boost/asio.hpp>
 #include <boost/array.hpp>
 #include <boost/noncopyable.hpp>
 #include <boost/shared_ptr.hpp>
 #include <boost/enable_shared_from_this.hpp>
-#include "reply.hpp"
-#include "request.hpp"
-#include "request_handler.hpp"
-#include "request_parser.hpp"
 
 namespace mudbase {
 
@@ -27,8 +24,7 @@ namespace mudbase {
     {
     public:
         /// Construct a connection with the given io_service
-        explicit TCPConnection(boost::asio::io_service& io_service,
-                               TCPConnectionManager& manager, request_handler& handler);
+        explicit TCPConnection(boost::asio::io_service& io_service, TCPConnectionManager& manager);
 
         /// Get the socket associated with the connection
         boost::asio::ip::tcp::socket& socket();
@@ -38,6 +34,12 @@ namespace mudbase {
 
         /// Stop all asynchronous operations associates with the connection
         void stop ();
+
+        /// Deque of typed in lines (input)
+        std::deque<std::string>& inputQueue();
+
+        /// Deque of response data (output)
+        std::deque<std::string>& outputQueue();
 
     private:
         /// Handle completion of a read operation
@@ -53,12 +55,17 @@ namespace mudbase {
         /// The manager for this connection
         TCPConnectionManager& connection_manager_;
 
-        /// The handler used to process incoming commands
-        request_handler& request_handler_;
-
-        //// Buffer for incoming data
+        /// Buffer for incoming data
         boost::array<char, 8192> buffer_;
 
+        /// String for partial line received
+        std::string partial_string_;
+
+        /// Input queue of strings
+        std::deque<std::string> input_queue_;
+
+        /// Output queue of strings
+        std::deque<std::string> output_queue_;
     };
 
     typedef boost::shared_ptr<TCPConnection> TCPConnection_ptr;
