@@ -41,6 +41,15 @@ namespace mudbase {
         /// Deque of response data (output)
         std::deque<std::string>& outputQueue();
 
+        /// Force the close of the socket
+        void close();
+
+        /// Write a line to the connection
+        void write(std::string& line);
+
+        /// Kick the next write
+        void kick();
+
     private:
         /// Handle completion of a read operation
         void handle_read(const boost::system::error_code& e,

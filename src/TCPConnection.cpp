@@ -76,11 +76,32 @@ namespace mudbase {
         }
     }
 
+    void TCPConnection::close() {
+        // Initiate graceful connection closure.
+        boost::system::error_code ignored_ec;
+        socket_.shutdown(boost::asio::ip::tcp::socket::shutdown_both, ignored_ec);
+    }
+
+    void TCPConnection::write(std::string& line) {
+        bool do_kick = output_queue_.empty();
+
+        output_queue_.push_back(line);
+
+        if (do_kick) {
+            kick();
+        }
+    }
+
+    void TCPConnection::kick() {
+        socket_.async_send(output_queue_.front(),
+                           boost::bind(&TCPConnection::handle_write, shared_from_this(),
+                                       boost::asio::placeholders::error));
+    }
+
     void TCPConnection::handle_write(const boost::system::error_code &e) {
         if (!e) {
-            // Initiate graceful connection closure.
-            boost::system::error_code ignored_ec;
-            socket_.shutdown(boost::asio::ip::tcp::socket::shutdown_both, ignored_ec);
+            output_queue_.pop_front();
+            kick();
         }
 
         if (e != boost::asio::error::operation_aborted) {
