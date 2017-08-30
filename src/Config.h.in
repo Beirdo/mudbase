@@ -1,0 +1,3 @@
+// the configured options and settings
+#define Mudbase_VERSION_MAJOR @Mudbase_VERSION_MAJOR@
+#define Mudbase_VERSION_MINOR @Mudbase_VERSION_MINOR@
