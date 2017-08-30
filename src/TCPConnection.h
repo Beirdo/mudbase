@@ -13,6 +13,7 @@
 #include <boost/noncopyable.hpp>
 #include <boost/shared_ptr.hpp>
 #include <boost/enable_shared_from_this.hpp>
+#include "PlayerConnection.h"
 
 namespace mudbase {
 
@@ -44,11 +45,17 @@ namespace mudbase {
         /// Force the close of the socket
         void close();
 
+        /// Read data from the connection
+        void read();
+
         /// Write a line to the connection
         void write(std::string& line);
 
         /// Kick the next write
         void kick();
+
+        /// Get associated player
+        PlayerConnection_ptr player();
 
     private:
         /// Handle completion of a read operation
@@ -75,6 +82,9 @@ namespace mudbase {
 
         /// Output queue of strings
         std::deque<std::string> output_queue_;
+
+        /// Player
+        PlayerConnection_ptr player_;
     };
 
     typedef boost::shared_ptr<TCPConnection> TCPConnection_ptr;

@@ -8,11 +8,13 @@
 #include <string>
 #include <boost/bind.hpp>
 #include "TCPConnectionManager.h"
+#include "PlayerConnection.h"
 
 namespace mudbase {
     TCPConnection::TCPConnection(boost::asio::io_service &io_service, TCPConnectionManager &manager)
             : socket_(io_service),
-              connection_manager_(manager) {
+              connection_manager_(manager),
+              player_() {
         partial_string_.clear();
     }
 
@@ -21,6 +23,11 @@ namespace mudbase {
     }
 
     void TCPConnection::start() {
+        player_.reset(new PlayerConnection(shared_from_this()));
+        read();
+    }
+
+    void TCPConnection::read() {
         socket_.async_read_some(boost::asio::buffer(buffer_),
                                 boost::bind(&TCPConnection::handle_read, shared_from_this(),
                                             boost::asio::placeholders::error,
@@ -39,6 +46,11 @@ namespace mudbase {
     /// Deque of response data (output)
     std::deque<std::string>& TCPConnection::outputQueue() {
         return output_queue_;
+    }
+
+    /// Get associated player
+    PlayerConnection_ptr TCPConnection::player() {
+        return player_;
     }
 
     void TCPConnection::handle_read(const boost::system::error_code &e,
@@ -70,7 +82,7 @@ namespace mudbase {
             }
 
             // Start reading again
-            start();
+            read();
         } else if (e != boost::asio::error::operation_aborted) {
             connection_manager_.stop(shared_from_this());
         }
