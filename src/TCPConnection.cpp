@@ -2,19 +2,18 @@
 // Created by Gavin on 8/29/2017.
 //
 
-#include "TCPConnection.h"
 #include <vector>
 #include <deque>
 #include <string>
 #include <boost/bind.hpp>
+#include "TCPConnection.h"
 #include "TCPConnectionManager.h"
 #include "PlayerConnection.h"
 
 namespace mudbase {
     TCPConnection::TCPConnection(boost::asio::io_service &io_service, TCPConnectionManager &manager)
             : socket_(io_service),
-              connection_manager_(manager),
-              player_() {
+              connection_manager_(manager) {
         partial_string_.clear();
     }
 
@@ -39,12 +38,12 @@ namespace mudbase {
     }
 
     /// Deque of typed in lines (input)
-    std::deque<std::string>& TCPConnection::inputQueue() {
+    std::deque<std::string> &TCPConnection::inputQueue() {
         return input_queue_;
     }
 
     /// Deque of response data (output)
-    std::deque<std::string>& TCPConnection::outputQueue() {
+    std::deque<std::string> &TCPConnection::outputQueue() {
         return output_queue_;
     }
 
@@ -94,7 +93,7 @@ namespace mudbase {
         socket_.shutdown(boost::asio::ip::tcp::socket::shutdown_both, ignored_ec);
     }
 
-    void TCPConnection::write(std::string& line) {
+    void TCPConnection::write(std::string &line) {
         bool do_kick = output_queue_.empty();
 
         output_queue_.push_back(line);

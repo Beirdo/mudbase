@@ -14,18 +14,12 @@
 #include "FiberBase.h"
 #include "FiberManager.h"
 #include "FiberIdle.h"
+#include "ThreadManager.h"
 
 namespace mudbase {
 
     FiberManager fiber_manager;
-
-/*****************************************************************************
-*   example thread function
-*****************************************************************************/
-    void thread(ThreadArgs *args) {
-        args->manager.init_thread(args->b);
-        while (true);
-    }
+    ThreadManager thread_manager;
 
 /*****************************************************************************
 *   main()

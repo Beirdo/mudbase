@@ -7,13 +7,11 @@
 
 namespace mudbase {
     PlayerConnection::PlayerConnection(TCPConnection_ptr connection)
-        : connection_(connection)
-    {
+            : connection_(connection) {
 
     }
 
-    TCPConnection_ptr PlayerConnection::connection()
-    {
+    TCPConnection_ptr PlayerConnection::connection() {
         return connection_;
     }
 

@@ -4,9 +4,7 @@
 
 #include "FiberBase.h"
 #include "FiberManager.h"
-#include <algorithm>
 #include <boost/bind.hpp>
-#include "barrier.h"
 
 namespace mudbase {
 
@@ -50,11 +48,32 @@ namespace mudbase {
         BOOST_ASSERT(0 == fiber_count_);
     }
 
-    void FiberManager::init_thread(barrier *b) {
-        boost::fibers::use_scheduling_algorithm<boost::fibers::algo::shared_work>();
-        if (b != NULL) {
-            b->wait();
+    void FiberManager::move_to_thread(const FiberBase_ptr fiber, std::thread::id thread) {
+        FiberContext_ptr context = fiber->context();
+        context->detach();
+
+        auto search = thread_map_.find(thread);
+        std::set<FiberContext_ptr> target_set;
+        if (search != thread_map_.end()) {
+            target_set = search->second;
+        } else {
+            target_set = std::set<FiberContext_ptr>();
+            thread_map_.insert(thread, target_set);
         }
+        target_set.insert(context);
+    }
+
+    void FiberManager::steal(std::thread::id thread) {
+        auto search = thread_map_.find(thread);
+        if (search == thread_map_.end()) {
+            return;
+        }
+
+        std::set<FiberContext_ptr> target_set = search->second;
+        for (FiberContext_ptr context : target_set) {
+            context->attach(context.get());
+        }
+        target_set.clear();
     }
 
 } // namespace mudbase

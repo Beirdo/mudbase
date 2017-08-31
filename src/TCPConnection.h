@@ -13,34 +13,36 @@
 #include <boost/noncopyable.hpp>
 #include <boost/shared_ptr.hpp>
 #include <boost/enable_shared_from_this.hpp>
-#include "PlayerConnection.h"
 
 namespace mudbase {
+
+    class PlayerConnection;
+
+    typedef boost::shared_ptr<PlayerConnection> PlayerConnection_ptr;
 
     class TCPConnectionManager;
 
     class TCPConnection
             : public boost::enable_shared_from_this<TCPConnection>,
-              private boost::noncopyable
-    {
+              private boost::noncopyable {
     public:
         /// Construct a connection with the given io_service
-        explicit TCPConnection(boost::asio::io_service& io_service, TCPConnectionManager& manager);
+        explicit TCPConnection(boost::asio::io_service &io_service, TCPConnectionManager &manager);
 
         /// Get the socket associated with the connection
-        boost::asio::ip::tcp::socket& socket();
+        boost::asio::ip::tcp::socket &socket();
 
         /// Start the first asynchronous operation for the connection
         void start();
 
         /// Stop all asynchronous operations associates with the connection
-        void stop ();
+        void stop();
 
         /// Deque of typed in lines (input)
-        std::deque<std::string>& inputQueue();
+        std::deque<std::string> &inputQueue();
 
         /// Deque of response data (output)
-        std::deque<std::string>& outputQueue();
+        std::deque<std::string> &outputQueue();
 
         /// Force the close of the socket
         void close();
@@ -49,7 +51,7 @@ namespace mudbase {
         void read();
 
         /// Write a line to the connection
-        void write(std::string& line);
+        void write(std::string &line);
 
         /// Kick the next write
         void kick();
@@ -59,17 +61,17 @@ namespace mudbase {
 
     private:
         /// Handle completion of a read operation
-        void handle_read(const boost::system::error_code& e,
+        void handle_read(const boost::system::error_code &e,
                          std::size_t bytes_transferred);
 
         /// Handle completion of a write operation
-        void handle_write(const boost::system::error_code& e);
+        void handle_write(const boost::system::error_code &e);
 
         /// Socket for the connection
         boost::asio::ip::tcp::socket socket_;
 
         /// The manager for this connection
-        TCPConnectionManager& connection_manager_;
+        TCPConnectionManager &connection_manager_;
 
         /// Buffer for incoming data
         boost::array<char, 8192> buffer_;

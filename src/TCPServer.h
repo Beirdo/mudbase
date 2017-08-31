@@ -10,7 +10,6 @@
 #include <boost/noncopyable.hpp>
 #include "TCPConnection.h"
 #include "TCPConnectionManager.h"
-#include "request_handler.hpp"
 
 namespace mudbase {
 

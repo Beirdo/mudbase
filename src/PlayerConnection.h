@@ -13,13 +13,13 @@
 namespace mudbase {
 
     class PlayerConnection
-        : public boost::enable_shared_from_this<PlayerConnection>,
-          private boost::noncopyable
-    {
+            : public boost::enable_shared_from_this<PlayerConnection>,
+              private boost::noncopyable {
     public:
         explicit PlayerConnection(TCPConnection_ptr connection);
 
         TCPConnection_ptr connection();
+
     private:
         TCPConnection_ptr connection_;
     };

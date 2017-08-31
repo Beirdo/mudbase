@@ -11,6 +11,7 @@
 #include <thread>
 #include <mutex>
 #include <set>
+#include <map>
 #include <boost/assert.hpp>
 #include <boost/fiber/all.hpp>
 #include "barrier.h"
@@ -23,11 +24,18 @@ namespace mudbase {
     class FiberManager {
     public:
         void register_fiber(FiberBase_ptr fiber);
+
         void deregister_fiber(FiberBase_ptr fiber);
+
         void shutdown();
+
         void wait();
-        void init_thread(barrier *b);
+
         std::size_t count();
+
+        void move_to_thread(const FiberBase_ptr fiber, std::thread::id thread);
+
+        void steal(std::thread::id thread);
 
     private:
         std::size_t fiber_count_;
@@ -35,12 +43,8 @@ namespace mudbase {
         boost::fibers::condition_variable_any cnd_count_;
 
         std::set<FiberBase_ptr> fibers_;
+        std::map<std::thread::id, std::set<FiberContext_ptr> > thread_map_;
     };
-
-    typedef struct {
-        barrier *b;
-        FiberManager& manager;
-    } ThreadArgs;
 
 } // namespace mudbase
 

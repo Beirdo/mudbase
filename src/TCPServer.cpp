@@ -4,7 +4,6 @@
 
 #include "TCPServer.h"
 #include <boost/bind.hpp>
-#include <signal.h>
 
 namespace mudbase {
 
