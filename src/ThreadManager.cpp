@@ -49,7 +49,6 @@ namespace mudbase {
     }
 
     void ThreadManager::init_thread(barrier *b) {
-        boost::fibers::use_scheduling_algorithm<boost::fibers::algo::shared_work>();
         if (b != nullptr) {
             b->wait();
         }

@@ -20,7 +20,7 @@ configure_file (
 )
 
 # add the binary tree to the search path for include files
-# so that we will find TutorialConfig.h
-include_directories("${PROJECT_BINARY_DIR}")
+# so that we will find Config.h
+include_directories("${PROJECT_BINARY_DIR}" "${PROJECT_SOURCE_DIR}")
 
 add_executable(Mudbase ${Mudbase_SOURCES})

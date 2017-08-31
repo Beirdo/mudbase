@@ -6,8 +6,8 @@
 
 namespace mudbase {
 
-    ThreadPlayer::ThreadPlayer(ThreadManager &manager, barrier *b, bool admin)
-            : ThreadBase(manager, b), admin_(admin) {
+    ThreadPlayer::ThreadPlayer(ThreadManager &manager, barrier *b, ThreadPlayerType t)
+            : ThreadBase(manager, b), type_(t) {
     }
 
     virtual void ThreadPlayer::thread_func() {
