@@ -33,7 +33,7 @@ namespace mudbase {
 
         std::size_t count();
 
-        void move_to_thread(const FiberBase_ptr fiber, std::thread::id thread);
+        void move_to_thread(const FiberBase_ptr &fiber, std::thread::id thread);
 
         void steal(std::thread::id thread);
 

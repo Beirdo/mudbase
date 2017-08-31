@@ -18,7 +18,9 @@ namespace mudbase {
             // If this is the only running fiber, delay 100ms
             usleep(100000);
         }
-        boost::this_fiber::yield();
+
+        // Yield
+        return(true);
     }
 
 } // namespace mudbase

@@ -48,7 +48,7 @@ namespace mudbase {
         BOOST_ASSERT(0 == fiber_count_);
     }
 
-    void FiberManager::move_to_thread(const FiberBase_ptr fiber, std::thread::id thread) {
+    void FiberManager::move_to_thread(const FiberBase_ptr &fiber, std::thread::id thread) {
         FiberContext_ptr context = fiber->context();
         context->detach();
 

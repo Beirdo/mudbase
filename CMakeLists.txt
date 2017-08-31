@@ -1,8 +1,8 @@
 cmake_minimum_required(VERSION 3.8)
 set(Boost_INCLUDE_DIR d:/mingw/include/)
 set(Boost_LIBRARY_DIR d:/mingw/lib/)
-find_package(Boost COMPONENTS system filesystem REQUIRED)
 include_directories(${Boost_INCLUDE_DIR})
+find_package(Boost COMPONENTS system filesystem REQUIRED)
 
 project(Mudbase)
 

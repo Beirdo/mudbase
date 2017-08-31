@@ -23,16 +23,17 @@ namespace mudbase {
             manager_.steal(thread_);
         }
 
-        if (fiber_func()) {
-            // If the routine returns true, then the fiber is done.
+        if (!fiber_func()) {
+            // If the routine returns false, then the fiber is done.
             manager_.deregister_fiber(shared_from_this());
-        } else {
-            context_ = active_context();
-            if (thread_ != next_thread_) {
-                manager_.move_to_thread(shared_from_this(), next_thread_);
-            }
-            boost::this_fiber::yield();
+            return;
         }
+
+        context_ = active_context();
+        if (thread_ != next_thread_) {
+            manager_.move_to_thread(shared_from_this(), next_thread_);
+        }
+        boost::this_fiber::yield();
     }
 
     void FiberBase::start() {
