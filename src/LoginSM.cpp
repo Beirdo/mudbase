@@ -24,6 +24,23 @@ namespace msm = boost::msm;
 
 namespace  // Concrete FSM implementation
 {
+    namespace mudbase {
+        class LoginSMInternal;
+        typedef boost::shared_ptr<LoginSMInternal> LoginSMInternal_ptr;
+        typedef std::map<std::string &, LoginSMInternal_ptr> ConnectionMap;
+    }
+
+    mudbase::ConnectionMap connectionMap;
+
+    mudbase::LoginSMInternal_ptr lookupConnection(std::string &uuid) {
+        auto search = connectionMap.find(thread);
+        if (search == connectionMap.end()) {
+            return nullptr;
+        }
+
+        return search->second;
+    }
+
     // events
     BOOST_MSM_EUML_DECLARE_ATTRIBUTE(std::string, input_line)
     BOOST_MSM_EUML_DECLARE_ATTRIBUTE(std:::string, connection_uuid)
@@ -894,13 +911,13 @@ namespace  // Concrete FSM implementation
     }
 #endif
 
-    typedef std::map<std::string&, mudbase::PlayerConnection_ptr> ConnectionMap
-    ConnectionMap connectionMap;
-
     namespace mudbase {
-        class LoginSMInternal {
+        class LoginSMInternal
+            : public boost::enable_shared_from_this<LoginSMInternal>,
+              private boost::noncopyable {
         public:
             LoginSMInternal(PlayerConnection_ptr connection);
+            ~LoginSMInternal();
 
             std::string &do_state_step();
 
@@ -912,8 +929,12 @@ namespace  // Concrete FSM implementation
 
         LoginSMInternal::LoginSMInternal(PlayerConnection_ptr connection)
                 : connection_(connection), uuid_(connection->uuid()) {
-            ::connectionMap.insert(uuid_, connection_);
+            ::connectionMap.insert(uuid_, shared_from_this());
             fsm_.start();
+        }
+
+        LoginSMInternal::~LoginSMInternal() {
+            ::connectionMap.erase(uuid_);
         }
 
         std::string &LoginSMInternal::do_state_step() {
@@ -925,49 +946,6 @@ namespace  // Concrete FSM implementation
         }
     }
 
-    void test() {
-        player p;
-        // needed to start the highest-level SM. This will call on_entry and mark the start of the SM
-        p.start();
-        // go to Open, call on_exit on Empty, then action, then on_entry on Open
-        p.process_event(open_close);
-        pstate(p);
-        p.process_event(open_close);
-        pstate(p);
-        // will be rejected, wrong disk type
-        p.process_event(
-                cd_detected("louie, louie", DISK_DVD));
-        pstate(p);
-        p.process_event(
-                cd_detected("louie, louie", DISK_CD));
-        pstate(p);
-        // no need to call play as the previous event does it in its action method
-        //p.process_event(play);
-
-        // at this point, Play is active
-        p.process_event(pause);
-        pstate(p);
-        // go back to Playing
-        p.process_event(end_pause);
-        pstate(p);
-        p.process_event(pause);
-        pstate(p);
-        p.process_event(stop);
-        pstate(p);
-        // event leading to the same state
-        // no action method called as none is defined in the transition table
-        p.process_event(stop);
-        pstate(p);
-        // test call to no_transition
-        p.process_event(pause);
-        pstate(p);
-    }
 }
-
-int main() {
-    test();
-    return 0;
-}
-
 
 #pragma clang diagnostic pop
