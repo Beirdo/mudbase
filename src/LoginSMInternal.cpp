@@ -915,9 +915,9 @@ namespace  // Concrete FSM implementation
     namespace mudbase {
 
         LoginSMInternal::LoginSMInternal(PlayerConnection_ptr connection)
-                : connection_(connection), uuid_(connection->uuid()), fsm_(new login) {
+                : connection_(connection), uuid_(connection->uuid()), fsm_(new ::login) {
             ::connectionMap.insert(uuid_, connection_);
-            login *pFsm = (login *)fsm_;
+            ::login *pFsm = (::login *)fsm_;
             pFsm->start();
         }
 
@@ -928,7 +928,7 @@ namespace  // Concrete FSM implementation
 
         std::string &LoginSMInternal::do_state_step() {
             std::string &line = connection_->readLine();
-            login *pFsm = (login *)fsm_;
+            ::login *pFsm = (::login *)fsm_;
             pFsm->process_event(::input(line, uuid_));
 
             // Return new state name
