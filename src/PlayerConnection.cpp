@@ -42,6 +42,7 @@ namespace mudbase {
     }
 
     void PlayerConnection::close() {
+        // TODO: flush all output?
         connection_->close();
     }
 
