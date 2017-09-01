@@ -5,6 +5,7 @@
 #ifndef MUDBASE_LOGINSM_H
 #define MUDBASE_LOGINSM_H
 
+#include <boost/shared_ptr.hpp>
 #include <string>
 #include "LoginSMInternal.h"
 #include "PlayerConnection.h"
@@ -19,6 +20,8 @@ namespace mudbase {
     private:
         LoginSMInternal_ptr internal_;
     };
+
+    typedef boost::shared_ptr<LoginSM> LoginSM_ptr;
 
 }
 

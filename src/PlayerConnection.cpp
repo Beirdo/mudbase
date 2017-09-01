@@ -41,4 +41,8 @@ namespace mudbase {
         connection_->write(line);
     }
 
+    void PlayerConnection::close() {
+        connection_->close();
+    }
+
 } // namespace mudbase

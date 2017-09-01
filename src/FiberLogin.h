@@ -7,6 +7,7 @@
 
 #include "FiberBase.h"
 #include "PlayerConnection.h"
+#include "LoginSM.h"
 
 namespace mudbase {
 
@@ -18,6 +19,7 @@ namespace mudbase {
         virtual bool fiber_func();
 
         PlayerConnection_ptr connection_;
+        LoginSM_ptr fsm_;
     };
 }
 

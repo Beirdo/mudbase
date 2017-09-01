@@ -23,6 +23,7 @@ namespace mudbase {
         bool hasInput();
         std::string &readLine();
         void writeLine(std::string &line, bool noCR = false);
+        void close();
 
     private:
         TCPConnection_ptr connection_;
