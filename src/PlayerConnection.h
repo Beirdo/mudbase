@@ -8,6 +8,7 @@
 #include <boost/noncopyable.hpp>
 #include <boost/shared_ptr.hpp>
 #include <boost/enable_shared_from_this.hpp>
+#include <string>
 #include "TCPConnection.h"
 
 namespace mudbase {
@@ -22,6 +23,7 @@ namespace mudbase {
 
     private:
         TCPConnection_ptr connection_;
+        std::string uuid_;
     };
 
     typedef boost::shared_ptr<PlayerConnection> PlayerConnection_ptr;
