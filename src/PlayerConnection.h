@@ -20,6 +20,9 @@ namespace mudbase {
         explicit PlayerConnection(TCPConnection_ptr connection);
 
         TCPConnection_ptr connection();
+        bool hasInput();
+        std::string &readLine();
+        void writeLine(std::string &line, bool noCR = false);
 
     private:
         TCPConnection_ptr connection_;

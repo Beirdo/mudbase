@@ -39,10 +39,10 @@ namespace mudbase {
         void stop();
 
         /// Deque of typed in lines (input)
-        std::deque<std::string> &inputQueue();
+        std::deque<std::string &> &inputQueue();
 
         /// Deque of response data (output)
-        std::deque<std::string> &outputQueue();
+        std::deque<std::string &> &outputQueue();
 
         /// Force the close of the socket
         void close();
@@ -80,10 +80,10 @@ namespace mudbase {
         std::string partial_string_;
 
         /// Input queue of strings
-        std::deque<std::string> input_queue_;
+        std::deque<std::string &> input_queue_;
 
         /// Output queue of strings
-        std::deque<std::string> output_queue_;
+        std::deque<std::string &> output_queue_;
 
         /// Player
         PlayerConnection_ptr player_;

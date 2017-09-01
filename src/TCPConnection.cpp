@@ -38,12 +38,12 @@ namespace mudbase {
     }
 
     /// Deque of typed in lines (input)
-    std::deque<std::string> &TCPConnection::inputQueue() {
+    std::deque<std::string &> &TCPConnection::inputQueue() {
         return input_queue_;
     }
 
     /// Deque of response data (output)
-    std::deque<std::string> &TCPConnection::outputQueue() {
+    std::deque<std::string &> &TCPConnection::outputQueue() {
         return output_queue_;
     }
 
