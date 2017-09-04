@@ -32,3 +32,11 @@
 *.app
 .idea/
 cmake-build-debug/
+
+*.swp
+*.bak
+*~
+CMakeCache.txt
+CMakeFiles/
+Config.h
+build/
