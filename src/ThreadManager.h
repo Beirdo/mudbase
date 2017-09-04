@@ -22,7 +22,7 @@ namespace mudbase {
 
     class ThreadManager {
     public:
-        void register_thread(ThreadBase_ptr fiber);
+        void register_thread(ThreadBase_ptr fiber, ThreadType t);
 
         void deregister_thread(ThreadBase_ptr fiber);
 
@@ -34,12 +34,20 @@ namespace mudbase {
 
         std::size_t count();
 
+        std::thread::id &login_thread();
+        std::thread::id &mortal_thread();
+        std::thread::id &immortal_thread();
+
     private:
         std::size_t thread_count_;
         std::mutex mtx_count_;
         boost::fibers::condition_variable_any cnd_count_;
 
         std::set<ThreadBase_ptr> threads_;
+
+        std::thread::id &login_thread_;
+        std::thread::id &mortal_thread_;
+        std::thread::id &immortal_thread_;
     };
 
 } // namespace mudbase

@@ -12,20 +12,12 @@
 
 namespace mudbase {
 
-    typedef enum {
-        THREAD_PLAYER,
-        THREAD_ADMIN,
-        THREAD_LOGIN
-    } ThreadPlayerType;
-
     class ThreadPlayer : public ThreadBase {
     public:
-        ThreadPlayer(ThreadManager &manager, barrier *b, ThreadPlayerType t);
+        ThreadPlayer(ThreadManager &manager, barrier *b, ThreadType t);
 
     protected:
         virtual void thread_func();
-
-        ThreadPlayerType type_;
     };
 
 } // namespace mudbase

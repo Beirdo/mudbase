@@ -10,12 +10,18 @@
 
 #include "TCPConnection.h"
 #include "PlayerConnection.h"
+#include "FiberLogin.h"
+#include "main.h"
 
 namespace mudbase {
     PlayerConnection::PlayerConnection(TCPConnection_ptr connection)
             : connection_(connection) {
         boost::uuids::random_generator gen;
         uuid_ = to_string(gen());
+
+        FiberBase_ptr fiber = new FiberLogin(fiber_manager, shared_from_this());
+        fiber_manager.register_fiber(fiber);
+        fiber_manager.move_to_thread(fiber, thread_manager.login_thread());
     }
 
     TCPConnection_ptr PlayerConnection::connection() {

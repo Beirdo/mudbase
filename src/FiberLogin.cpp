@@ -6,7 +6,9 @@
 #include <string>
 #include <boost/fiber/all.hpp>
 #include "FiberLogin.h"
+#include "FiberPlaying.h"
 #include "LoginSM.h"
+#include "main.h"
 
 namespace mudbase {
 
@@ -40,6 +42,13 @@ namespace mudbase {
             // create the player fiber, put it in appropriate thread
             // TODO
 
+            FiberBase_ptr fiber = new FiberPlaying(fiber_manager, connection_);
+            fiber_manager.register_fiber(fiber);
+            if (connection_->isImmortal) {
+                fiber_manager.move_to_thread(fiber, thread_manager.immortal_thread());
+            } else {
+                fiber_manager.move_to_thread(fiber, thread_manager.mortal_thread());
+            }
             return false;
         }
 

@@ -19,15 +19,24 @@ namespace mudbase {
 
     typedef boost::shared_ptr<ThreadBase> ThreadBase_ptr;
 
+    typedef enum {
+        THREAD_UNKNOWN,
+        THREAD_PLAYER,
+        THREAD_ADMIN,
+        THREAD_LOGIN
+    } ThreadType;
+
     class ThreadBase
             : public boost::enable_shared_from_this<ThreadBase>,
               private boost::noncopyable {
     public:
-        ThreadBase(ThreadManager &manager, barrier *b);
+        ThreadBase(ThreadManager &manager, barrier *b, ThreadType t = THREAD_UNKNOWN);
 
         void start();
 
         void stop();
+
+        std::thread::id &id();
 
     protected:
         virtual void thread_func() = 0;
@@ -36,6 +45,7 @@ namespace mudbase {
         bool abort_;
         ThreadManager &manager_;
         barrier *barrier_;
+        ThreadType type_;
     };
 
 } // namespace mudbase

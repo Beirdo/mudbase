@@ -16,6 +16,7 @@
 #include "FiberIdle.h"
 #include "ThreadManager.h"
 #include "ThreadPlayer.h"
+#include "main.h"
 
 namespace mudbase {
 

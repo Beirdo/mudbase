@@ -12,9 +12,23 @@ namespace mudbase {
         return threads_.size();
     }
 
-    void ThreadManager::register_thread(ThreadBase_ptr thread) {
+    void ThreadManager::register_thread(ThreadBase_ptr thread, ThreadType t) {
         threads_.insert(thread);
         thread->start();
+
+        switch (t) {
+            case THREAD_LOGIN:
+                login_thread_ = thread->id();
+                break;
+            case THREAD_ADMIN:
+                immortal_thread_ = thread->id();
+                break;
+            case THREAD_PLAYER:
+                mortal_thread_ = thread->id();
+                break;
+            default:
+                break;
+        }
 
         lock_t lk(mtx_count_);
         thread_count_++;
@@ -52,6 +66,18 @@ namespace mudbase {
         if (b != nullptr) {
             b->wait();
         }
+    }
+
+    std::thread::id &ThreadManager::login_thread() {
+        return login_thread_;
+    }
+
+    std::thread::id &ThreadManager::mortal_thread() {
+        return mortal_thread_;
+    }
+
+    std::thread::id &ThreadManager::immortal_thread() {
+        return immortal_thread_;
     }
 
 } // namespace mudbase

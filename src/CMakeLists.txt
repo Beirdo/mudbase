@@ -8,6 +8,7 @@ list(APPEND Mudbase_SOURCES
         "${CMAKE_CURRENT_LIST_DIR}/FiberBase.cpp"
         "${CMAKE_CURRENT_LIST_DIR}/FiberIdle.cpp"
         "${CMAKE_CURRENT_LIST_DIR}/FiberLogin.cpp"
+        "${CMAKE_CURRENT_LIST_DIR}/FiberPlaying.cpp"
         "${CMAKE_CURRENT_LIST_DIR}/ThreadManager.cpp"
         "${CMAKE_CURRENT_LIST_DIR}/ThreadBase.cpp"
         "${CMAKE_CURRENT_LIST_DIR}/ThreadPlayer.cpp"
