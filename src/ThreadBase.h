@@ -6,6 +6,7 @@
 #define MUDBASE_THREADBASE_H
 
 #include <thread>
+#include <string>
 #include <boost/noncopyable.hpp>
 #include <boost/shared_ptr.hpp>
 #include <boost/enable_shared_from_this.hpp>
@@ -36,12 +37,12 @@ namespace mudbase {
 
         void stop();
 
-        std::thread::id &id();
+	std::thread::id id();
 
     protected:
         virtual void thread_func() = 0;
 
-        std::thread::id thread_;
+        std::thread thread_;
         bool abort_;
         ThreadManager &manager_;
         barrier *barrier_;

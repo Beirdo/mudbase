@@ -14,7 +14,7 @@ namespace mudbase {
             : FiberBase(manager), connection_(conn) {
     }
 
-    virtual bool FiberPlaying::fiber_func() {
+    bool FiberPlaying::fiber_func() {
         // This fiber allows for playing the mud
 
         // There will be a parser module (that depends on the context of where the player is, and what kind of player)

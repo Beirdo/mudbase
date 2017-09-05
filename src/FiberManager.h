@@ -20,6 +20,9 @@
 namespace mudbase {
 
     typedef std::unique_lock<std::mutex> lock_t;
+    typedef std::set<FiberContext_ptr> FiberContextSet;
+    typedef std::pair<std::thread::id, FiberContextSet &> FiberThreadPair;
+    typedef std::map<std::thread::id, FiberContextSet &> FiberThreadMap;
 
     class FiberManager {
     public:
@@ -33,9 +36,9 @@ namespace mudbase {
 
         std::size_t count();
 
-        void move_to_thread(const FiberBase_ptr &fiber, std::thread::id thread);
+        void move_to_thread(const FiberBase_ptr &fiber, std::thread::id &thread);
 
-        void steal(std::thread::id thread);
+        void steal(std::thread::id &thread);
 
     private:
         std::size_t fiber_count_;
@@ -43,7 +46,7 @@ namespace mudbase {
         boost::fibers::condition_variable_any cnd_count_;
 
         std::set<FiberBase_ptr> fibers_;
-        std::map<std::thread::id, std::set<FiberContext_ptr> > thread_map_;
+	FiberThreadMap thread_map_;
     };
 
 } // namespace mudbase

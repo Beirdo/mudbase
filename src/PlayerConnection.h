@@ -22,8 +22,11 @@ namespace mudbase {
         TCPConnection_ptr connection();
         bool hasInput();
         std::string &readLine();
-        void writeLine(std::string &line, bool noCR = false);
+        void writeLine(const char *line, bool noCR = false);
+        void writeLine(std::string line, bool noCR = false);
         void close();
+	bool isImmortal();
+	std::string &uuid();
 
     private:
         TCPConnection_ptr connection_;

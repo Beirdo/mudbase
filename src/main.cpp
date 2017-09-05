@@ -26,13 +26,13 @@ namespace mudbase {
     int main(int argc, char *argv[]) {
         std::cout << "main thread started " << std::this_thread::get_id() << std::endl;
 
-        FiberBase_ptr idle_fiber = new FiberIdle(fiber_manager);
+        FiberBase_ptr idle_fiber(new FiberIdle(fiber_manager));
         fiber_manager.register_fiber(idle_fiber);
 
         barrier b(4);
-        ThreadBase_ptr user_thread = new ThreadPlayer(thread_manager, &b, THREAD_PLAYER);
-        ThreadBase_ptr admin_thread = new ThreadPlayer(thread_manager, &b, THREAD_ADMIN);
-        ThreadBase_ptr login_thread = new ThreadPlayer(thread_manager, &b, THREAD_LOGIN);
+        ThreadBase_ptr user_thread(new ThreadPlayer(thread_manager, &b, THREAD_PLAYER));
+        ThreadBase_ptr admin_thread(new ThreadPlayer(thread_manager, &b, THREAD_ADMIN));
+        ThreadBase_ptr login_thread(new ThreadPlayer(thread_manager, &b, THREAD_LOGIN));
         b.wait(); /*< sync with other threads: allow them to start processing >*/
 
         fiber_manager.wait();
@@ -44,6 +44,6 @@ namespace mudbase {
 
 } // namespace mudbase
 
-int::main(int argc, char *argv[]) {
+int main(int argc, char **argv) {
     return mudbase::main(argc, argv);
 }

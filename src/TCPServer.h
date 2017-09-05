@@ -46,9 +46,6 @@ namespace mudbase {
 
         /// The next connection to be accepted.
         TCPConnection_ptr new_connection_;
-
-        /// The handler for all incoming requests.
-        request_handler request_handler_;
     };
 
 } // namespace mudbase

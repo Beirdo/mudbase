@@ -12,7 +12,7 @@ namespace mudbase {
             : FiberBase(manager) {
     }
 
-    virtual bool FiberIdle::fiber_func() {
+    bool FiberIdle::fiber_func() {
         // This fiber exists to keep one fiber running when nobody is connected
         if (manager_.count() == 1) {
             // If this is the only running fiber, delay 100ms

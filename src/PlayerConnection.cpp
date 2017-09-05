@@ -19,7 +19,7 @@ namespace mudbase {
         boost::uuids::random_generator gen;
         uuid_ = to_string(gen());
 
-        FiberBase_ptr fiber = new FiberLogin(fiber_manager, shared_from_this());
+        FiberBase_ptr fiber(new FiberLogin(fiber_manager, shared_from_this()));
         fiber_manager.register_fiber(fiber);
         fiber_manager.move_to_thread(fiber, thread_manager.login_thread());
     }
@@ -33,14 +33,19 @@ namespace mudbase {
     }
 
     std::string &PlayerConnection::readLine() {
-        std::deque <std::string &> &inQ = connection_->inputQueue();
+        std::deque <std::string> &inQ = connection_->inputQueue();
         std::string &line = inQ.front();
         inQ.pop_front();
 
         return line;
     }
 
-    void PlayerConnection::writeLine(std::string &line, bool noCR = false) {
+
+    void PlayerConnection::writeLine(const char *line, bool noCR) {
+	writeLine(std::string(line), noCR);
+    }
+
+    void PlayerConnection::writeLine(std::string line, bool noCR) {
         if (!noCR) {
             line += "\n";
         }
@@ -50,6 +55,15 @@ namespace mudbase {
     void PlayerConnection::close() {
         // TODO: flush all output?
         connection_->close();
+    }
+
+    bool PlayerConnection::isImmortal() {
+	/// For now, everyone is immort
+	return true;
+    }
+
+    std::string &PlayerConnection::uuid() {
+	return uuid_;
     }
 
 } // namespace mudbase

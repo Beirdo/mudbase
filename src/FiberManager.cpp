@@ -44,26 +44,27 @@ namespace mudbase {
 
     void FiberManager::wait() {
         lock_t lk(mtx_count_);
-        cnd_count_.wait(lk, []() { return 0 == fiber_count_; });
+	std::size_t *pCount = &fiber_count_;
+        cnd_count_.wait(lk, [pCount]() { return 0 == *pCount; });
         BOOST_ASSERT(0 == fiber_count_);
     }
 
-    void FiberManager::move_to_thread(const FiberBase_ptr &fiber, std::thread::id thread) {
+    void FiberManager::move_to_thread(const FiberBase_ptr &fiber, std::thread::id &thread) {
         FiberContext_ptr context = fiber->context();
         context->detach();
 
         auto search = thread_map_.find(thread);
-        std::set<FiberContext_ptr> target_set;
+        FiberContextSet target_set;
         if (search != thread_map_.end()) {
             target_set = search->second;
         } else {
-            target_set = std::set<FiberContext_ptr>();
-            thread_map_.insert(thread, target_set);
+            target_set = FiberContextSet();
+            thread_map_.insert(FiberThreadPair(thread, target_set));
         }
         target_set.insert(context);
     }
 
-    void FiberManager::steal(std::thread::id thread) {
+    void FiberManager::steal(std::thread::id &thread) {
         auto search = thread_map_.find(thread);
         if (search == thread_map_.end()) {
             return;

@@ -38,12 +38,12 @@ namespace mudbase {
     }
 
     /// Deque of typed in lines (input)
-    std::deque<std::string &> &TCPConnection::inputQueue() {
+    std::deque<std::string> &TCPConnection::inputQueue() {
         return input_queue_;
     }
 
     /// Deque of response data (output)
-    std::deque<std::string &> &TCPConnection::outputQueue() {
+    std::deque<std::string> &TCPConnection::outputQueue() {
         return output_queue_;
     }
 
@@ -104,7 +104,8 @@ namespace mudbase {
     }
 
     void TCPConnection::kick() {
-        socket_.async_send(output_queue_.front(),
+	const char *line = output_queue_.front().c_str();
+        socket_.async_send(boost::asio::buffer(line, strlen(line)),
                            boost::bind(&TCPConnection::handle_write, shared_from_this(),
                                        boost::asio::placeholders::error));
     }

@@ -13,7 +13,7 @@ namespace mudbase {
 
     }
 
-    std::string &LoginSM::do_state_step() {
+    std::string LoginSM::do_state_step() {
         return internal_->do_state_step();
     }
 

@@ -58,7 +58,8 @@ namespace mudbase {
 
     void ThreadManager::wait() {
         lock_t lk(mtx_count_);
-        cnd_count_.wait(lk, []() { return 0 == thread_count_; });
+	std::size_t *pCount = &thread_count_;
+        cnd_count_.wait(lk, [pCount]() { return 0 == *pCount; });
         BOOST_ASSERT(0 == thread_count_);
     }
 

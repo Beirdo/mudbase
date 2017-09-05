@@ -20,7 +20,7 @@ namespace mudbase {
         LoginSMInternal(PlayerConnection_ptr connection);
         ~LoginSMInternal();
 
-        std::string &do_state_step();
+        std::string do_state_step();
 
     private:
         void *fsm_;

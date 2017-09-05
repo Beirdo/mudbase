@@ -9,6 +9,7 @@
 #include <boost/noncopyable.hpp>
 #include <boost/shared_ptr.hpp>
 #include <boost/enable_shared_from_this.hpp>
+#include <boost/fiber/all.hpp>
 
 namespace mudbase {
 
@@ -34,7 +35,6 @@ namespace mudbase {
         virtual bool fiber_func() = 0;
 
         std::thread::id thread_;
-        std::thread::id next_thread_;
         bool abort_;
         FiberManager &manager_;
 

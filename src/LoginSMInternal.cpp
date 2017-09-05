@@ -23,14 +23,14 @@ using namespace std;
 using namespace boost::msm::front::euml;
 namespace msm = boost::msm;
 
-namespace  // Concrete FSM implementation
-{
-    typedef std::map<std::string &, mudbase::PlayerConnection_ptr> ConnectionMap;
+namespace mudbase {
+    typedef std::map<std::string, PlayerConnection_ptr> ConnectionMap;
+    typedef std::pair<std::string, PlayerConnection_ptr> ConnectionPair;
 
-    mudbase::ConnectionMap connectionMap;
+    ConnectionMap connectionMap;
 
-    mudbase::PlayerConnection_ptr lookupConnection(std::string &uuid) {
-        auto search = connectionMap.find(thread);
+    PlayerConnection_ptr lookupConnection(std::string &uuid) {
+        auto search = connectionMap.find(uuid);
         if (search == connectionMap.end()) {
             return nullptr;
         }
@@ -38,11 +38,18 @@ namespace  // Concrete FSM implementation
         return search->second;
     }
 
+}
+
+
+#if 0
+namespace  // Concrete FSM implementation
+{
+#endif
     // events
     BOOST_MSM_EUML_DECLARE_ATTRIBUTE(std::string, input_line)
-    BOOST_MSM_EUML_DECLARE_ATTRIBUTE(std:::string, connection_uuid)
+    BOOST_MSM_EUML_DECLARE_ATTRIBUTE(std::string, connection_uuid)
 
-    BOOST_MSM_EUML_ATTRIBUTES((attributes_ << input_line << char_num), line_attributes)
+    BOOST_MSM_EUML_ATTRIBUTES((attributes_ << input_line << connection_uuid), line_attributes)
     BOOST_MSM_EUML_EVENT_WITH_ATTRIBUTES(input, line_attributes)
 
 
@@ -50,7 +57,7 @@ namespace  // Concrete FSM implementation
     BOOST_MSM_EUML_ACTION(Enter_Disconnect) {
             template<class Event, class FSM, class STATE>
             void operator()(Event const &event, FSM &, STATE &) {
-                mudbase::PlayerConnection_ptr conn = lookupConnection(event(connection_uuid));
+                mudbase::PlayerConnection_ptr conn = mudbase::lookupConnection(event.get_attribute(connection_uuid));
                 conn->writeLine("Goodbye.");
             }
     };
@@ -70,6 +77,13 @@ namespace  // Concrete FSM implementation
     };
 
     BOOST_MSM_EUML_ACTION(Enter_Confirm_Email) {
+            template<class Event, class FSM, class STATE>
+            void operator()(Event const &, FSM &, STATE &) {
+                std::cout << "entering: NotHolding" << std::endl;
+            }
+    };
+
+    BOOST_MSM_EUML_ACTION(Enter_Resend_Confirm_Email) {
             template<class Event, class FSM, class STATE>
             void operator()(Event const &, FSM &, STATE &) {
                 std::cout << "entering: NotHolding" << std::endl;
@@ -268,6 +282,7 @@ namespace  // Concrete FSM implementation
     BOOST_MSM_EUML_STATE((Enter_Playing), Playing)
     BOOST_MSM_EUML_STATE((Enter_Get_Email), Get_Email)
     BOOST_MSM_EUML_STATE((Enter_Confirm_Email), Confirm_Email)
+    BOOST_MSM_EUML_STATE((Enter_Resend_Confirm_Email), Resend_Confirm_Email)
     BOOST_MSM_EUML_STATE((Enter_Get_New_User_Password), Get_New_User_Password)
     BOOST_MSM_EUML_STATE((Enter_Confirm_Password), Confirm_Password)
     BOOST_MSM_EUML_STATE((Enter_Get_Password), Get_Password)
@@ -296,7 +311,7 @@ namespace  // Concrete FSM implementation
 
     /// State names (keep in same order as definitions above!!!!)
     static char const *const state_names[] = {
-            "Initial", "Disconnect", "Playing", "Get_Email", "Confirm_Email", "Get_New_User_Password",
+            "Initial", "Disconnect", "Playing", "Get_Email", "Confirm_Email", "Resend_Confirm_Email", "Get_New_User_Password",
             "Confirm_Password", "Get_Password", "Choose_Ansi", "Show_Motd", "Show_Wmotd", "Show_Credits",
             "Press_Enter", "Show_Account_Menu", "Show_Player_List", "Get_New_Password", "Confirm_New_Password",
             "Get_Confirm_Code", "Show_Creation_Menu", "Choose_Name", "Choose_Sex", "Reroll_Abilities",
@@ -858,7 +873,7 @@ namespace  // Concrete FSM implementation
         Get_New_Password + input [new_password] == Confirm_New_Password,
         Get_New_Password + input [empty_input || !new_password] == Get_New_Password,
         Confirm_New_Password + input [match_new_password] / save_new_password == Show_Account_Menu,
-        Confirm_New_password + input [!match_new_password] / passwords_no_match == Show_Account_Menu,
+        Confirm_New_Password + input [!match_new_password] / passwords_no_match == Show_Account_Menu,
         Get_Confirm_Code + input [match_confirm_code] / save_confirmed == Show_Account_Menu,
         Get_Confirm_Code + input [!match_confirm_code] / save_unconfirmed == Show_Account_Menu,
         Show_Creation_Menu + input [is_1] == Choose_Name,
@@ -907,35 +922,38 @@ namespace  // Concrete FSM implementation
     // choice of back-end
     typedef msm::back::state_machine <login_> login;
 
-    std::string &state_name(login const &p) {
-        std::string name = std::string(state_names[p.current_state()[0]]);
-        return name;
+    std::string state_name(login const &p) {
+        return std::string(state_names[p.current_state()[0]]);
     }
 
-    namespace mudbase {
-
-        LoginSMInternal::LoginSMInternal(PlayerConnection_ptr connection)
-                : connection_(connection), uuid_(connection->uuid()), fsm_(new ::login) {
-            ::connectionMap.insert(uuid_, connection_);
-            ::login *pFsm = (::login *)fsm_;
-            pFsm->start();
-        }
-
-        LoginSMInternal::~LoginSMInternal() {
-            ::connectionMap.erase(uuid_);
-            delete fsm_;
-        }
-
-        std::string &LoginSMInternal::do_state_step() {
-            std::string &line = connection_->readLine();
-            ::login *pFsm = (::login *)fsm_;
-            pFsm->process_event(::input(line, uuid_));
-
-            // Return new state name
-            return ::state_name(*pFsm);
-        }
-    }
-
+#if 0
 }
+#endif
+
+namespace mudbase {
+
+    LoginSMInternal::LoginSMInternal(PlayerConnection_ptr connection)
+            : connection_(connection), uuid_(connection->uuid()), fsm_(new ::login) {
+        mudbase::connectionMap.insert(ConnectionPair(uuid_, connection_));
+        ::login *pFsm = (login *)fsm_;
+        pFsm->start();
+    }
+
+    LoginSMInternal::~LoginSMInternal() {
+        mudbase::connectionMap.erase(uuid_);
+        ::login *pFsm = (login *)fsm_;
+        delete pFsm;
+    }
+
+    std::string LoginSMInternal::do_state_step() {
+        std::string &line = connection_->readLine();
+        ::login *pFsm = (login *)fsm_;
+        pFsm->process_event(input(line, uuid_));
+
+        // Return new state name
+	return ::state_name(*pFsm);
+    }
+ }
+
 
 #pragma clang diagnostic pop

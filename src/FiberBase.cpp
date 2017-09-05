@@ -13,13 +13,12 @@ namespace mudbase {
     FiberBase::FiberBase(FiberManager &manager)
             : manager_(manager), abort_(false), context_(nullptr) {
         thread_ = std::this_thread::get_id();
-        next_thread_ = std::this_thread::get_id();
     }
 
     void FiberBase::run() {
         std::thread::id oldThread = thread_;
         thread_ = std::this_thread::get_id();
-        if (oldThread != thread_ && thread_ == next_thread_) {
+        if (oldThread != thread_) {
             manager_.steal(thread_);
         }
 
@@ -30,15 +29,12 @@ namespace mudbase {
         }
 
         context_ = active_context();
-        if (thread_ != next_thread_) {
-            manager_.move_to_thread(shared_from_this(), next_thread_);
-        }
         boost::this_fiber::yield();
     }
 
     void FiberBase::start() {
         abort_ = false;
-        boost::fibers::fiber([]() { run(); }).detach();
+        boost::fibers::fiber([this]() { this->run(); }).detach();
     }
 
     void FiberBase::stop() {

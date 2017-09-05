@@ -3,6 +3,7 @@
 //
 
 #include <thread>
+#include <string>
 #include <boost/fiber/fiber.hpp>
 #include <boost/fiber/all.hpp>
 #include <boost/bind.hpp>
@@ -30,8 +31,8 @@ namespace mudbase {
         }
     }
 
-    std::thread::id &ThreadBase::id() {
-        return thread_;
+    std::thread::id ThreadBase::id() {
+	return thread_.get_id();
     }
 
 } // namespace mudbase

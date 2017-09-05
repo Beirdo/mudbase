@@ -45,9 +45,9 @@ namespace mudbase {
 
         std::set<ThreadBase_ptr> threads_;
 
-        std::thread::id &login_thread_;
-        std::thread::id &mortal_thread_;
-        std::thread::id &immortal_thread_;
+        std::thread::id login_thread_;
+        std::thread::id mortal_thread_;
+        std::thread::id immortal_thread_;
     };
 
 } // namespace mudbase

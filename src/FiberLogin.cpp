@@ -16,7 +16,7 @@ namespace mudbase {
             : FiberBase(manager), connection_(conn), fsm_(new LoginSM(conn)) {
     }
 
-    virtual bool FiberLogin::fiber_func() {
+    bool FiberLogin::fiber_func() {
         // This fiber allows for login and account creation.
 
         // If a user logs in to the same account, this will be tolerated up to a number of simultaneous logins
@@ -32,7 +32,7 @@ namespace mudbase {
             return true;
         }
 
-        std::string &state = fsm_->do_state_step();
+        std::string state = fsm_->do_state_step();
         if (state == "Disconnect") {
             connection_->close();
             return false;
@@ -42,9 +42,9 @@ namespace mudbase {
             // create the player fiber, put it in appropriate thread
             // TODO
 
-            FiberBase_ptr fiber = new FiberPlaying(fiber_manager, connection_);
+            FiberBase_ptr fiber(new FiberPlaying(fiber_manager, connection_));
             fiber_manager.register_fiber(fiber);
-            if (connection_->isImmortal) {
+            if (connection_->isImmortal()) {
                 fiber_manager.move_to_thread(fiber, thread_manager.immortal_thread());
             } else {
                 fiber_manager.move_to_thread(fiber, thread_manager.mortal_thread());
