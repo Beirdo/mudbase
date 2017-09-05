@@ -1,10 +1,5 @@
 cmake_minimum_required(VERSION 3.7)
-set(BOOST_INCLUDEDIR /usr/include/)
-set(BOOST_LIBRARYDIR /usr/lib/x86_64-linux-gnu/)
-set(CMAKE_FIND_LIBRARY_PREFIXES lib)
-set(CMAKE_FIND_LIBRARY_SUFFIXES so)
-include_directories(${Boost_INCLUDE_DIR})
-find_package(Boost 1.63 REQUIRED COMPONENTS system filesystem)
+add_subdirectory(boost-cmake)
 
 project(Mudbase)
 
@@ -26,3 +21,6 @@ configure_file (
 include_directories("${PROJECT_BINARY_DIR}" "${PROJECT_SOURCE_DIR}")
 
 add_executable(Mudbase ${Mudbase_SOURCES})
+target_link_libraries(Mudbase Boost::system)
+target_link_libraries(Mudbase Boost::boost)
+target_link_libraries(Mudbase Boost::fiber)
