@@ -14,7 +14,9 @@ namespace mudbase {
 
     void ThreadManager::register_thread(ThreadBase_ptr thread, ThreadType t) {
         threads_.insert(thread);
+#if 0
         thread->start();
+#endif
 
         switch (t) {
             case THREAD_LOGIN:

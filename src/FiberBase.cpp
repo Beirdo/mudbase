@@ -13,11 +13,13 @@ namespace mudbase {
     FiberBase::FiberBase(FiberManager &manager)
             : manager_(manager), abort_(false), context_(nullptr) {
         thread_ = std::this_thread::get_id();
+	start();
     }
 
     void FiberBase::run() {
         std::thread::id oldThread = thread_;
         thread_ = std::this_thread::get_id();
+	std::cout << "Running fiber in thread " << thread_ << std::endl;
         if (oldThread != thread_) {
             manager_.steal(thread_);
         }
