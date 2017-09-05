@@ -16,11 +16,19 @@ namespace mudbase {
             : manager_(manager), barrier_(b), abort_(false), thread_(), type_(t) {
     }
 
-    void ThreadBase::start() {
-        abort_ = false;
-        manager_.init_thread(barrier_);
-        thread_ = std::thread(boost::bind(&ThreadBase::thread_func, shared_from_this()));
+    void ThreadBase::run() {
         manager_.register_thread(shared_from_this(), type_);
+	std::cout << "registered" << std::endl;
+        manager_.init_thread(barrier_);
+	thread_func();
+    }
+
+    void ThreadBase::start() {
+	std::cout << "Start type " << type_ << std::endl;
+        abort_ = false;
+	std::cout << "init_thread" << std::endl;
+        thread_ = std::thread(boost::bind(&ThreadBase::run, shared_from_this()));
+	std::cout << "bound" << std::endl;
     }
 
     void ThreadBase::stop() {

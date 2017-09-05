@@ -33,6 +33,8 @@ namespace mudbase {
     public:
         ThreadBase(ThreadManager &manager, barrier *b, ThreadType t = THREAD_UNKNOWN);
 
+	void run();
+
         void start();
 
         void stop();
