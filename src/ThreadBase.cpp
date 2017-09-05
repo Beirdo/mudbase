@@ -20,6 +20,7 @@ namespace mudbase {
         manager_.register_thread(shared_from_this(), type_);
 	std::cout << "registered" << std::endl;
         manager_.init_thread(barrier_);
+        std::cout << "thread started " << std::this_thread::get_id() << " type " << type_ << std::endl;
 	thread_func();
     }
 

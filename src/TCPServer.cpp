@@ -4,6 +4,7 @@
 
 #include "TCPServer.h"
 #include <boost/bind.hpp>
+#include "barrier.h"
 
 namespace mudbase {
 
@@ -31,11 +32,11 @@ namespace mudbase {
         acceptor_.set_option(boost::asio::ip::tcp::acceptor::reuse_address(true));
         acceptor_.bind(endpoint);
         acceptor_.listen();
-
-        start_accept();
     }
 
     void TCPServer::run() {
+        start_accept();
+
         // The io_service::run() call will block until all asynchronous operations
         // have finished. While the server is running, there is always at least one
         // asynchronous operation outstanding: the asynchronous accept call waiting

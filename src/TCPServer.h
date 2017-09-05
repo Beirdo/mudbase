@@ -8,13 +8,17 @@
 #include <boost/asio.hpp>
 #include <string>
 #include <boost/noncopyable.hpp>
+#include <boost/shared_ptr.hpp>
+#include <boost/enable_shared_from_this.hpp>
 #include "TCPConnection.h"
 #include "TCPConnectionManager.h"
+#include "barrier.h"
 
 namespace mudbase {
 
     class TCPServer
-            : private boost::noncopyable {
+            : public boost::enable_shared_from_this<TCPServer>,
+              private boost::noncopyable {
     public:
         /// Construct the server to listen on the specified TCP address and port
         explicit TCPServer(const std::string &address, const std::string &port);
@@ -47,6 +51,8 @@ namespace mudbase {
         /// The next connection to be accepted.
         TCPConnection_ptr new_connection_;
     };
+
+    typedef boost::shared_ptr<TCPServer> TCPServer_ptr;
 
 } // namespace mudbase
 

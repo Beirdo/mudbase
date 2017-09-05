@@ -24,7 +24,8 @@ namespace mudbase {
         THREAD_UNKNOWN,
         THREAD_PLAYER,
         THREAD_ADMIN,
-        THREAD_LOGIN
+        THREAD_LOGIN,
+	THREAD_NETWORK,
     } ThreadType;
 
     class ThreadBase

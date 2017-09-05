@@ -16,14 +16,13 @@
 #include "FiberIdle.h"
 #include "ThreadManager.h"
 #include "ThreadPlayer.h"
-#include "TCPServer.h"
+#include "ThreadNetwork.h"
 #include "main.h"
 
 namespace mudbase {
 
     FiberManager fiber_manager;
     ThreadManager thread_manager;
-    TCPServer tcp_server("0.0.0.0", "7001");
 
     int main(int argc, char *argv[]) {
         std::cout << "main thread started " << std::this_thread::get_id() << std::endl;
@@ -31,7 +30,7 @@ namespace mudbase {
 	FiberBase_ptr idle_fiber(new FiberIdle(fiber_manager));
         fiber_manager.register_fiber(idle_fiber);
 
-        barrier b(4);
+        barrier b(5);
         ThreadBase_ptr user_thread(new ThreadPlayer(thread_manager, &b, THREAD_PLAYER));
 	user_thread->start();
 
@@ -40,6 +39,10 @@ namespace mudbase {
 
         ThreadBase_ptr login_thread(new ThreadPlayer(thread_manager, &b, THREAD_LOGIN));
 	login_thread->start();
+
+	ThreadBase_ptr network_thread(new ThreadNetwork(thread_manager, &b,
+				                        "0.0.0.0", "7001"));
+	network_thread->start();
 
         b.wait(); /*< sync with other threads: allow them to start processing >*/
 	std::cout << "Threads synced" << std::endl;

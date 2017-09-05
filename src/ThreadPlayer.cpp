@@ -16,7 +16,6 @@ namespace mudbase {
         // All work is done in the fibers, so until abort, we just sleep if it gets in here.
         // This will have a tick timer type of thing in here soon (unless I create a time-based scheduler for the fibers)
 
-        std::cout << "player thread started " << std::this_thread::get_id() << " type " << type_ << std::endl;
         while (!abort_) {
             usleep(100000);
         }

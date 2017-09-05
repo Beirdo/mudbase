@@ -22,10 +22,4 @@ namespace mudbase {
 
 } // namespace mudbase
 
-
-class ThreadPlayer {
-
-};
-
-
 #endif //MUDBASE_THREADPLAYER_H

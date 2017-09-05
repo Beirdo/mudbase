@@ -12,6 +12,7 @@ list(APPEND Mudbase_SOURCES
         "${CMAKE_CURRENT_LIST_DIR}/ThreadManager.cpp"
         "${CMAKE_CURRENT_LIST_DIR}/ThreadBase.cpp"
         "${CMAKE_CURRENT_LIST_DIR}/ThreadPlayer.cpp"
+	"${CMAKE_CURRENT_LIST_DIR}/ThreadNetwork.cpp"
         "${CMAKE_CURRENT_LIST_DIR}/LoginSM.cpp"
         "${CMAKE_CURRENT_LIST_DIR}/LoginSMInternal.cpp"
 )
