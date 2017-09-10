@@ -7,6 +7,7 @@ set(Mudbase_VERSION_MAJOR 0)
 set(Mudbase_VERSION_MINOR 1)
 
 set(PROJECT_SOURCE_DIR src)
+set(CMAKE_CXX_VERSION 11)
 include(${PROJECT_SOURCE_DIR}/CMakeLists.txt)
 
 # configure a header file to pass some of the CMake settings
