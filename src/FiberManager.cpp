@@ -49,32 +49,74 @@ namespace mudbase {
         BOOST_ASSERT(0 == fiber_count_);
     }
 
-    void FiberManager::move_to_thread(const FiberBase_ptr &fiber, std::thread::id &thread) {
-        FiberContext_ptr context = fiber->context();
-        context->detach();
+    void FiberManager::move_to_thread(const FiberBase_ptr &fiber, std::thread::id thread) {
+	fiber->set_thread(thread);
+        FiberContext *context = fiber->context();
+	if (context == nullptr) {
+            return;
+	}
 
-        auto search = thread_map_.find(thread);
-        FiberContextSet target_set;
-        if (search != thread_map_.end()) {
+	// Stick the context into the set of fibers to move to
+        auto search = thread_to_map_.find(thread);
+        FiberContextSet *target_set;
+        if (search != thread_to_map_.end()) {
             target_set = search->second;
         } else {
-            target_set = FiberContextSet();
-            thread_map_.insert(FiberThreadPair(thread, target_set));
+            target_set = new FiberContextSet();
+            thread_to_map_.insert(FiberThreadPair(thread, target_set));
         }
-        target_set.insert(context);
+        target_set->insert(context);
+	
+	// Stick the context into the set of fibers to move from
+	thread = std::this_thread::get_id();
+        search = thread_from_map_.find(thread);
+        if (search != thread_from_map_.end()) {
+            target_set = search->second;
+        } else {
+            target_set = new FiberContextSet();
+            thread_from_map_.insert(FiberThreadPair(thread, target_set));
+        }
+        target_set->insert(context);
     }
 
-    void FiberManager::steal(std::thread::id &thread) {
-        auto search = thread_map_.find(thread);
-        if (search == thread_map_.end()) {
+    void FiberManager::attach_all() {
+	std::thread::id thread = std::this_thread::get_id();
+	boost::fibers::context *active = boost::fibers::context::active();
+
+        auto search = thread_to_map_.find(thread);
+        if (search == thread_to_map_.end()) {
             return;
         }
 
-        std::set<FiberContext_ptr> target_set = search->second;
-        for (FiberContext_ptr context : target_set) {
-            context->attach(context.get());
+        FiberContextSet *target_set = search->second;
+        for (FiberContext *context : *target_set) {
+	    std::cout << "Context " << context << std::endl;
+	    if (context != nullptr && context != active &&
+		context->get_scheduler() == nullptr) {
+                active->attach(context);
+	    }
         }
-        target_set.clear();
+        target_set->clear();
+    }
+
+    void FiberManager::detach_all() {
+	std::thread::id thread = std::this_thread::get_id();
+	boost::fibers::context *active = boost::fibers::context::active();
+
+        auto search = thread_from_map_.find(thread);
+        if (search == thread_from_map_.end()) {
+            return;
+        }
+
+        FiberContextSet *target_set = search->second;
+        for (FiberContext *context : *target_set) {
+	    std::cout << "Context " << context << std::endl;
+	    if (context != nullptr && context != active &&
+		context->get_scheduler() != nullptr) {
+                context->detach();
+	    }
+        }
+        target_set->clear();
     }
 
 } // namespace mudbase

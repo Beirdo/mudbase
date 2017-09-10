@@ -9,7 +9,9 @@
 
 namespace mudbase {
     void TCPConnectionManager::start(TCPConnection_ptr c) {
+	std::cout << "Inserting" << std::endl;
         connections_.insert(c);
+	std::cout << "Starting" << std::endl;
         c->start();
     }
 

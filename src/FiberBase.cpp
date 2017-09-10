@@ -12,25 +12,44 @@ namespace mudbase {
 
     FiberBase::FiberBase(FiberManager &manager)
             : manager_(manager), abort_(false), context_(nullptr) {
-        thread_ = std::this_thread::get_id();
 	start();
     }
 
-    void FiberBase::run() {
-        std::thread::id oldThread = thread_;
-        thread_ = std::this_thread::get_id();
-	std::cout << "Running fiber in thread " << thread_ << std::endl;
-        if (oldThread != thread_) {
-            manager_.steal(thread_);
-        }
+    void FiberBase::set_thread(std::thread::id thread) {
+	target_thread_ = thread;
+    }
 
+    void FiberBase::run() {
+	// Set the context if it's not set
+	if (context_ == nullptr) {
+	    context_ = boost::fibers::context::active();
+	    // Make sure it gets in the list of fibers to move
+	    manager_.move_to_thread(shared_from_this(), target_thread_);
+	}
+
+	std::thread::id thread = std::this_thread::get_id();
+
+	// Detach all fibers from this thread that are attached
+	std::cout << "Detaching fibers from thread " << thread << std::endl;
+	manager_.detach_all();
+
+	// Make sure to take any fibers still on this thread but not attached
+	std::cout << "Attaching fibers to thread " << thread << std::endl;
+	manager_.attach_all();
+
+	if (thread != target_thread_) {
+	    return;
+	}
+
+	std::cout << "Running fiber in thread " << thread << std::endl;
         if (!fiber_func()) {
+	    std::cout << "Got false, deregistering" << std::endl;
             // If the routine returns false, then the fiber is done.
             manager_.deregister_fiber(shared_from_this());
             return;
         }
 
-        context_ = active_context();
+	std::cout << "Yielding" << std::endl;
         boost::this_fiber::yield();
     }
 
@@ -43,11 +62,7 @@ namespace mudbase {
         abort_ = true;
     }
 
-    FiberContext_ptr FiberBase::active_context() {
-        return FiberContext_ptr(boost::fibers::context::active());
-    }
-
-    FiberContext_ptr FiberBase::context() {
+    FiberContext *FiberBase::context() {
         return context_;
     }
 

@@ -22,7 +22,13 @@ namespace mudbase {
     }
 
     void TCPConnection::start() {
-        player_.reset(new PlayerConnection(shared_from_this()));
+	std::cout << "Creating Player" << std::endl;
+        player_ = PlayerConnection_ptr(new PlayerConnection(shared_from_this()));
+
+	std::cout << "Starting Player" << std::endl;
+	player_->start();
+
+	std::cout << "About to read" << std::endl;
         read();
     }
 

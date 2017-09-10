@@ -3,7 +3,9 @@
 //
 
 #include <unistd.h>
+#include <boost/fiber/all.hpp>
 #include "ThreadPlayer.h"
+#include "main.h"
 
 namespace mudbase {
 
@@ -18,6 +20,8 @@ namespace mudbase {
 
         while (!abort_) {
             usleep(100000);
+	    fiber_manager.attach_all();
+	    boost::this_fiber::yield();
         }
     }
 

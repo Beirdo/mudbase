@@ -16,11 +16,17 @@
 namespace mudbase {
     PlayerConnection::PlayerConnection(TCPConnection_ptr connection)
             : connection_(connection) {
+        std::cout << "PlayerConnection" << std::endl;
         boost::uuids::random_generator gen;
         uuid_ = to_string(gen());
+    }
 
+    void PlayerConnection::start() {
+	std::cout << "Creating fiber" << std::endl;
         FiberBase_ptr fiber(new FiberLogin(fiber_manager, shared_from_this()));
+	std::cout << "Registering fiber" << std::endl;
         fiber_manager.register_fiber(fiber);
+	std::cout << "Moving fiber to new thread" << std::endl;
         fiber_manager.move_to_thread(fiber, thread_manager.login_thread());
     }
 

@@ -28,6 +28,8 @@ namespace mudbase {
         //      -- Playing        delete fiber (after creating player fiber, putting it into appropriate thread)
         //      -- all others     yield fiber (handle another line of input)
 
+	std::cout << "Login Fiber" << std::endl;
+
         if (!connection_->hasInput()) {
             return true;
         }

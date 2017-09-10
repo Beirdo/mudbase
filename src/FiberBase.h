@@ -15,7 +15,8 @@ namespace mudbase {
 
     class FiberManager;
 
-    typedef boost::shared_ptr<boost::fibers::context> FiberContext_ptr;
+    typedef boost::fibers::context FiberContext;
+    typedef boost::shared_ptr<FiberContext> FiberContext_ptr;
 
     class FiberBase
             : public boost::enable_shared_from_this<FiberBase>,
@@ -29,18 +30,19 @@ namespace mudbase {
 
         void run();
 
-        FiberContext_ptr context();
+        FiberContext *context();
+
+	void set_thread(std::thread::id thread);
 
     protected:
         virtual bool fiber_func() = 0;
 
-        std::thread::id thread_;
         bool abort_;
         FiberManager &manager_;
 
-        FiberContext_ptr context_;
+        FiberContext *context_;
 
-        FiberContext_ptr active_context();
+	std::thread::id target_thread_;
     };
 
     typedef boost::shared_ptr<FiberBase> FiberBase_ptr;

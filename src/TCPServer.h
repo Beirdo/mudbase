@@ -31,7 +31,7 @@ namespace mudbase {
         void start_accept();
 
         /// Handle completion of an asynchronous accept operation.
-        void handle_accept(const boost::system::error_code &e);
+        void handle_accept(TCPConnection_ptr connection, const boost::system::error_code &e);
 
         /// Handle a request to stop the server.
         void handle_stop();
@@ -47,9 +47,6 @@ namespace mudbase {
 
         /// The connection manager which owns all live connections.
         TCPConnectionManager connection_manager_;
-
-        /// The next connection to be accepted.
-        TCPConnection_ptr new_connection_;
     };
 
     typedef boost::shared_ptr<TCPServer> TCPServer_ptr;
