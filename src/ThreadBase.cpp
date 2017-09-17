@@ -9,6 +9,8 @@
 #include <boost/bind.hpp>
 #include "ThreadBase.h"
 #include "ThreadManager.h"
+#include "FiberIdle.h"
+#include "main.h"
 
 namespace mudbase {
 
@@ -21,6 +23,11 @@ namespace mudbase {
 	std::cout << "registered" << std::endl;
         manager_.init_thread(barrier_);
         std::cout << "thread started " << std::this_thread::get_id() << " type " << type_ << std::endl;
+
+	FiberBase_ptr idle_fiber(new FiberIdle(fiber_manager));
+        fiber_manager.register_fiber(idle_fiber);
+	fiber_manager.move_to_thread(idle_fiber, id());
+
 	thread_func();
     }
 

@@ -37,23 +37,11 @@ namespace mudbase {
         ThreadBase_ptr user_thread(new ThreadPlayer(thread_manager, &b, THREAD_PLAYER));
 	user_thread->start();
 
-	FiberBase_ptr idle_fiber_user(new FiberIdle(fiber_manager));
-        fiber_manager.register_fiber(idle_fiber_user);
-	fiber_manager.move_to_thread(idle_fiber_user, user_thread->id());
-
         ThreadBase_ptr admin_thread(new ThreadPlayer(thread_manager, &b, THREAD_ADMIN));
 	admin_thread->start();
 
-	FiberBase_ptr idle_fiber_admin(new FiberIdle(fiber_manager));
-        fiber_manager.register_fiber(idle_fiber_admin);
-	fiber_manager.move_to_thread(idle_fiber_admin, admin_thread->id());
-
         ThreadBase_ptr login_thread(new ThreadPlayer(thread_manager, &b, THREAD_LOGIN));
 	login_thread->start();
-
-	FiberBase_ptr idle_fiber_login(new FiberIdle(fiber_manager));
-        fiber_manager.register_fiber(idle_fiber_login);
-	fiber_manager.move_to_thread(idle_fiber_login, login_thread->id());
 
 	ThreadBase_ptr network_thread(new ThreadNetwork(thread_manager, &b,
 				                        "0.0.0.0", "7001"));
