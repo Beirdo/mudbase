@@ -20,37 +20,37 @@ namespace mudbase {
     }
 
     void FiberBase::run() {
-	// Set the context if it's not set
-	if (context_ == nullptr) {
-	    context_ = boost::fibers::context::active();
-	    // Make sure it gets in the list of fibers to move
-	    manager_.move_to_thread(shared_from_this(), target_thread_);
+	while (1) {
+	    // Set the context if it's not set
+	    if (context_ == nullptr) {
+	        context_ = boost::fibers::context::active();
+	        // Make sure it gets in the list of fibers to move
+	        manager_.move_to_thread(shared_from_this(), target_thread_);
+	    }
+    
+	    std::thread::id thread = std::this_thread::get_id();
+
+	    // Detach all fibers from this thread that are attached
+	    // std::cout << "Detaching fibers from thread " << thread << std::endl;
+	    manager_.detach_all();
+
+	    // Make sure to take any fibers still on this thread but not attached
+	    // std::cout << "Attaching fibers to thread " << thread << std::endl;
+	    manager_.attach_all();
+
+	    if (thread == target_thread_) {
+	        // std::cout << "Running fiber in thread " << thread << std::endl;
+                if (!fiber_func()) {
+	            std::cout << "Got false, deregistering" << std::endl;
+                    // If the routine returns false, then the fiber is done.
+                    manager_.deregister_fiber(shared_from_this());
+                    return;
+                }
+	    }
+
+	    // std::cout << "Yielding" << std::endl;
+            boost::this_fiber::yield();
 	}
-
-	std::thread::id thread = std::this_thread::get_id();
-
-	// Detach all fibers from this thread that are attached
-	std::cout << "Detaching fibers from thread " << thread << std::endl;
-	manager_.detach_all();
-
-	// Make sure to take any fibers still on this thread but not attached
-	std::cout << "Attaching fibers to thread " << thread << std::endl;
-	manager_.attach_all();
-
-	if (thread != target_thread_) {
-	    return;
-	}
-
-	std::cout << "Running fiber in thread " << thread << std::endl;
-        if (!fiber_func()) {
-	    std::cout << "Got false, deregistering" << std::endl;
-            // If the routine returns false, then the fiber is done.
-            manager_.deregister_fiber(shared_from_this());
-            return;
-        }
-
-	std::cout << "Yielding" << std::endl;
-        boost::this_fiber::yield();
     }
 
     void FiberBase::start() {

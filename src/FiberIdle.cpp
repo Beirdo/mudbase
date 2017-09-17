@@ -14,7 +14,7 @@ namespace mudbase {
     }
 
     bool FiberIdle::fiber_func() {
-	std::cout << "Idle Fiber" << std::endl;
+	// std::cout << "Idle Fiber" << std::endl;
 
         // If this is the only running fiber, delay 100ms
         usleep(100000);
