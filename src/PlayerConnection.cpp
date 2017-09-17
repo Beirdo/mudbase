@@ -15,19 +15,18 @@
 
 namespace mudbase {
     PlayerConnection::PlayerConnection(TCPConnection_ptr connection)
-            : connection_(connection) {
-        std::cout << "PlayerConnection" << std::endl;
+            : connection_(connection), fiber_() {
         boost::uuids::random_generator gen;
         uuid_ = to_string(gen());
+        std::cout << "PlayerConnection " << uuid_ << std::endl;
     }
 
     void PlayerConnection::start() {
-	std::cout << "Creating fiber" << std::endl;
-        FiberBase_ptr fiber(new FiberLogin(fiber_manager, shared_from_this()));
-	std::cout << "Registering fiber" << std::endl;
-        fiber_manager.register_fiber(fiber);
-	std::cout << "Moving fiber to new thread" << std::endl;
-        fiber_manager.move_to_thread(fiber, thread_manager.login_thread());
+	std::cout << "Creating login fiber" << std::endl;
+        fiber_.reset(new FiberLogin(fiber_manager, shared_from_this()));
+        fiber_manager.register_fiber(fiber_);
+	std::cout << "Moving fiber to login thread" << std::endl;
+        fiber_manager.move_to_thread(fiber_, thread_manager.login_thread());
     }
 
     TCPConnection_ptr PlayerConnection::connection() {
@@ -35,6 +34,7 @@ namespace mudbase {
     }
 
     bool PlayerConnection::hasInput() {
+	std::cout << "Input queue empty: " << connection_->inputQueue().empty() << std::endl;
         return !connection_->inputQueue().empty();
     }
 
@@ -43,6 +43,7 @@ namespace mudbase {
         std::string &line = inQ.front();
         inQ.pop_front();
 
+	std::cout << "Dequeued '" << line << "'" << std::endl;
         return line;
     }
 

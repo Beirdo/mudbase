@@ -10,6 +10,7 @@
 #include <boost/enable_shared_from_this.hpp>
 #include <string>
 #include "TCPConnection.h"
+#include "FiberBase.h"
 
 namespace mudbase {
 
@@ -32,6 +33,7 @@ namespace mudbase {
     private:
         TCPConnection_ptr connection_;
         std::string uuid_;
+	FiberBase_ptr fiber_;
     };
 
     typedef boost::shared_ptr<PlayerConnection> PlayerConnection_ptr;

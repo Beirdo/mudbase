@@ -31,12 +31,14 @@ namespace mudbase {
 	    std::thread::id thread = std::this_thread::get_id();
 
 	    // Detach all fibers from this thread that are attached
-	    // std::cout << "Detaching fibers from thread " << thread << std::endl;
-	    manager_.detach_all();
+	    if (manager_.detach_all()) {
+	        std::cout << "Detaching fibers from thread " << thread << std::endl;
+	    }
 
 	    // Make sure to take any fibers still on this thread but not attached
-	    // std::cout << "Attaching fibers to thread " << thread << std::endl;
-	    manager_.attach_all();
+	    if (manager_.attach_all()) {
+	        std::cout << "Attaching fibers to thread " << thread << std::endl;
+	    }
 
 	    if (thread == target_thread_) {
 	        // std::cout << "Running fiber in thread " << thread << std::endl;
@@ -46,6 +48,8 @@ namespace mudbase {
                     manager_.deregister_fiber(shared_from_this());
                     return;
                 }
+	    } else {
+		std::cout << "Thread " << thread << " not matching target " << target_thread_ << std::endl;
 	    }
 
 	    // std::cout << "Yielding" << std::endl;

@@ -60,6 +60,7 @@ namespace mudbase {
 
     void TCPConnection::handle_read(const boost::system::error_code &e,
                                     std::size_t bytes_transferred) {
+	std::cout << "Reading " << bytes_transferred << " bytes" << std::endl;
         if (!e) {
             // Iterate the input buffer, splitting off lines, which get queued
             char *begin = buffer_.data();
@@ -74,6 +75,7 @@ namespace mudbase {
                         partial_string_.clear();
                     }
                     str.append(std::string(begin, ch - begin - 1));
+		    std::cout << "Got string '" << str << "'" << std::endl;
                     input_queue_.push_back(str);
                     if (*ch == '\r') {
                         ch++;

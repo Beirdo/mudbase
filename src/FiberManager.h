@@ -38,8 +38,8 @@ namespace mudbase {
 
         void move_to_thread(const FiberBase_ptr &fiber, std::thread::id thread);
 
-        void attach_all();
-        void detach_all();
+        bool attach_all();
+        bool detach_all();
 
     private:
         std::size_t fiber_count_;

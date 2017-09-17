@@ -4,6 +4,8 @@
 
 #include <unistd.h>
 #include "ThreadNetwork.h"
+#include "FiberIdle.h"
+#include "main.h"
 
 namespace mudbase {
 
@@ -15,6 +17,10 @@ namespace mudbase {
 
     void ThreadNetwork::thread_func() {
         // This handles the network connections
+	FiberBase_ptr idle_fiber(new FiberIdle(fiber_manager));
+        fiber_manager.register_fiber(idle_fiber);
+	fiber_manager.move_to_thread(idle_fiber, id());
+
 	server_->run();
     }
 
