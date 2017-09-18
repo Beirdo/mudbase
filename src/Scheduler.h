@@ -14,8 +14,9 @@ namespace mudbase {
     class ThreadedProps : public boost::fibers::fiber_properties {
     public:
         ThreadedProps(boost::fibers::context * ctx):
-            fiber_properties(ctx),
-            thread_() {
+            boost::fibers::fiber_properties(ctx),
+            thread_(std::this_thread::get_id()) {
+            std::cout << "Context: " << ctx << " Thread: " << thread_ << std::endl;
         }
 
 	std::thread::id get_thread() const {

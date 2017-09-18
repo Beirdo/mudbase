@@ -51,7 +51,13 @@ namespace mudbase {
     }
 
     void FiberManager::move_to_thread(const FiberBase_ptr fiber, std::thread::id thread) {
-	ThreadedProps &props(fiber->fiber()->properties<ThreadedProps>());
+	Fiber &fiber_ = fiber->fiber();
+	if (fiber->context() == nullptr) {
+            return;
+	}
+
+	std::cout << "Fiber: " << &fiber_ << " context: " << fiber->context() << std::endl;
+	ThreadedProps &props = fiber_.properties<ThreadedProps>();
 	props.set_thread(thread);
     }
 

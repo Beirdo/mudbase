@@ -3,7 +3,6 @@
 //
 
 #include <thread>
-#include <boost/fiber/fiber.hpp>
 #include <boost/fiber/all.hpp>
 #include "FiberBase.h"
 #include "FiberManager.h"
@@ -12,7 +11,7 @@ namespace mudbase {
 
     FiberBase::FiberBase(FiberManager &manager)
             : manager_(manager), abort_(false), attached_(false),
-	      context_(nullptr), fiber_(nullptr) {
+	      context_(nullptr), fiber_() {
 	start();
     }
 
@@ -26,7 +25,7 @@ namespace mudbase {
 	    if (context_ == nullptr) {
 	        context_ = boost::fibers::context::active();
 	        // Make sure it gets in the list of fibers to move
-	        // manager_.move_to_thread(shared_from_this(), target_thread_);
+	        manager_.move_to_thread(shared_from_this(), target_thread_);
 	    }
     
 	    std::thread::id thread = std::this_thread::get_id();
@@ -51,15 +50,16 @@ namespace mudbase {
     void FiberBase::start() {
         abort_ = false;
 	attached_ = true;
-        fiber_ = new boost::fibers::fiber([this]() { this->run(); });
-	fiber_->detach();
+        fiber_ = boost::fibers::fiber([this]() { this->run(); });
+	fiber_.detach();
+	std::cout << "Fiber started" << std::endl;
     }
 
     void FiberBase::stop() {
         abort_ = true;
     }
 
-    boost::fibers::fiber *FiberBase::fiber() {
+    Fiber &FiberBase::fiber() {
         return fiber_;
     }
 

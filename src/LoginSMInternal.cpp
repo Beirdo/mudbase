@@ -41,10 +41,6 @@ namespace mudbase {
 }
 
 
-#if 0
-namespace  // Concrete FSM implementation
-{
-#endif
     // events
     BOOST_MSM_EUML_DECLARE_ATTRIBUTE(std::string, input_line)
     BOOST_MSM_EUML_DECLARE_ATTRIBUTE(std::string, connection_uuid)
@@ -838,7 +834,9 @@ namespace  // Concrete FSM implementation
 
     // replaces the old transition table
     BOOST_MSM_EUML_TRANSITION_TABLE((
-        Initial == Get_Email,
+        Initial == Get_Email
+#if 0
+,
         Get_Email + input [email_exists && !admin_blocked] == Get_Password,
         Get_Email + input [!email_exists && !admin_blocked] / save_new_email == Confirm_Email,
         Get_Email + input [empty_input || admin_blocked] == Disconnect,
@@ -906,6 +904,7 @@ namespace  // Concrete FSM implementation
         Delete_User + input / not_implemented_yet == Show_Creation_Menu,
         Show_Login_Menu + input / not_implemented_yet == Disconnect,
         Edit_Extra_Descr + input / not_implemented_yet == Disconnect
+#endif
     ), transition_table)
 
 
@@ -925,10 +924,6 @@ namespace  // Concrete FSM implementation
     std::string state_name(login const &p) {
         return std::string(state_names[p.current_state()[0]]);
     }
-
-#if 0
-}
-#endif
 
 namespace mudbase {
 
