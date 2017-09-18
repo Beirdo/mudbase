@@ -28,7 +28,7 @@ namespace mudbase {
         void set_thread(std::thread::id t) {
             // Of course, it's only worth reshuffling the queue and all if we're
             // actually changing the priority.
-            if ( t != thread_) {
+            if (t != thread_) {
                 thread_ = t;
                 notify();
             }
@@ -42,7 +42,7 @@ namespace mudbase {
     private:
         typedef boost::fibers::scheduler::ready_queue_type   rqueue_t;
 
-        rqueue_t                                rqueue_;
+        rqueue_t                    rqueue_;
         std::mutex                  mtx_{};
         std::condition_variable     cnd_{};
         bool                        flag_{ false };
@@ -75,12 +75,12 @@ namespace mudbase {
             }
         }
 
-        virtual boost::fibers::context * pick_next() noexcept {
+        virtual boost::fibers::context *pick_next() noexcept {
             // if ready queue is empty, just tell caller
             if (rqueue_.empty() ) {
                 return nullptr;
             }
-            boost::fibers::context *ctx(& rqueue_.front());
+            boost::fibers::context *ctx(&rqueue_.front());
             rqueue_.pop_front();
             return ctx;
         }
@@ -91,7 +91,7 @@ namespace mudbase {
 
         virtual void property_change(boost::fibers::context * ctx,
 		                     ThreadedProps & props) noexcept {
-            if ( ! ctx->ready_is_linked()) {
+            if (!ctx->ready_is_linked()) {
                 return;
             }
 
@@ -101,23 +101,23 @@ namespace mudbase {
             // Here we know that ctx was in our ready queue, but we've unlinked
             // it. We happen to have a method that will (re-)add a context* to the
             // right place in the ready queue.
-            awakened( ctx, props);
+            awakened(ctx, props);
         }
 
-        void suspend_until( std::chrono::steady_clock::time_point const& time_point) noexcept {
+        void suspend_until(std::chrono::steady_clock::time_point const& time_point) noexcept {
             if ( (std::chrono::steady_clock::time_point::max)() == time_point) {
-                std::unique_lock< std::mutex > lk( mtx_);
-                cnd_.wait( lk, [this](){ return flag_; });
+                std::unique_lock< std::mutex> lk(mtx_);
+                cnd_.wait(lk, [this](){ return flag_; });
                 flag_ = false;
             } else {
-                std::unique_lock< std::mutex > lk( mtx_);
-                cnd_.wait_until( lk, time_point, [this](){ return flag_; });
+                std::unique_lock< std::mutex> lk(mtx_);
+                cnd_.wait_until(lk, time_point, [this](){ return flag_; });
                 flag_ = false;
             }
         }
     
         void notify() noexcept {
-            std::unique_lock< std::mutex > lk( mtx_);
+            std::unique_lock< std::mutex> lk(mtx_);
             flag_ = true;
             lk.unlock();
             cnd_.notify_all();

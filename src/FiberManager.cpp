@@ -50,15 +50,23 @@ namespace mudbase {
         BOOST_ASSERT(0 == fiber_count_);
     }
 
-    void FiberManager::move_to_thread(const FiberBase_ptr fiber, std::thread::id thread) {
+    void FiberManager::move_to_thread(FiberBase_ptr fiber, std::thread::id thread) {
 	Fiber &fiber_ = fiber->fiber();
 	if (fiber->context() == nullptr) {
             return;
 	}
 
+	if (fiber_.get_id() != boost::this_fiber::get_id() && fiber_.joinable()) {
+	    fiber_.join();
+	}
+
 	std::cout << "Fiber: " << &fiber_ << " context: " << fiber->context() << std::endl;
 	ThreadedProps &props = fiber_.properties<ThreadedProps>();
 	props.set_thread(thread);
+
+	if (fiber_.get_id() != boost::this_fiber::get_id() && fiber_.joinable()) {
+	    fiber_.detach();
+	}
     }
 
 } // namespace mudbase
