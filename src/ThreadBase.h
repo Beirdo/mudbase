@@ -11,6 +11,7 @@
 #include <boost/shared_ptr.hpp>
 #include <boost/enable_shared_from_this.hpp>
 #include "barrier.h"
+#include "FiberBase.h"
 
 namespace mudbase {
 
@@ -51,6 +52,7 @@ namespace mudbase {
         ThreadManager &manager_;
         barrier *barrier_;
         ThreadType type_;
+	FiberBase_ptr idle_fiber_;
     };
 
 } // namespace mudbase

@@ -34,6 +34,9 @@ namespace mudbase {
 
 	void set_thread(std::thread::id thread);
 
+	bool is_attached();
+	void set_attached(bool attached);
+
     protected:
         virtual bool fiber_func() = 0;
 
@@ -42,6 +45,7 @@ namespace mudbase {
 
         FiberContext *context_;
 
+	bool attached_;
 	std::thread::id target_thread_;
     };
 

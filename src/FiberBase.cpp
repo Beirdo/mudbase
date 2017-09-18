@@ -11,7 +11,8 @@
 namespace mudbase {
 
     FiberBase::FiberBase(FiberManager &manager)
-            : manager_(manager), abort_(false), context_(nullptr) {
+            : manager_(manager), abort_(false), attached_(false),
+	      context_(nullptr) {
 	start();
     }
 
@@ -40,7 +41,7 @@ namespace mudbase {
 	        std::cout << "Attaching fibers to thread " << thread << std::endl;
 	    }
 
-	    if (thread == target_thread_) {
+	    if (is_attached() && thread == target_thread_) {
 	        // std::cout << "Running fiber in thread " << thread << std::endl;
                 if (!fiber_func()) {
 	            std::cout << "Got false, deregistering" << std::endl;
@@ -49,7 +50,7 @@ namespace mudbase {
                     return;
                 }
 	    } else {
-		std::cout << "Thread " << thread << " not matching target " << target_thread_ << std::endl;
+		//std::cout << "Thread " << thread << " not matching target " << target_thread_ << std::endl;
 	    }
 
 	    // std::cout << "Yielding" << std::endl;
@@ -59,6 +60,7 @@ namespace mudbase {
 
     void FiberBase::start() {
         abort_ = false;
+	attached_ = false;
         boost::fibers::fiber([this]() { this->run(); }).detach();
     }
 
@@ -68,6 +70,14 @@ namespace mudbase {
 
     FiberContext *FiberBase::context() {
         return context_;
+    }
+
+    bool FiberBase::is_attached() {
+	return attached_;
+    }
+
+    void FiberBase::set_attached(bool attached) {
+	attached_ = attached;
     }
 
 } // namespace mudbase

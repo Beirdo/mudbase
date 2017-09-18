@@ -10,6 +10,7 @@
 #include <condition_variable>
 #include <thread>
 #include <mutex>
+#include <deque>
 #include <set>
 #include <map>
 #include <boost/assert.hpp>
@@ -20,9 +21,9 @@
 namespace mudbase {
 
     typedef std::unique_lock<std::mutex> lock_t;
-    typedef std::set<FiberContext *> FiberContextSet;
-    typedef std::pair<std::thread::id, FiberContextSet *> FiberThreadPair;
-    typedef std::map<std::thread::id, FiberContextSet *> FiberThreadMap;
+    typedef std::deque<FiberBase_ptr> FiberDeque;
+    typedef std::pair<std::thread::id, FiberDeque *> FiberThreadPair;
+    typedef std::map<std::thread::id, FiberDeque *> FiberThreadMap;
 
     class FiberManager {
     public:
@@ -36,7 +37,7 @@ namespace mudbase {
 
         std::size_t count();
 
-        void move_to_thread(const FiberBase_ptr &fiber, std::thread::id thread);
+        void move_to_thread(const FiberBase_ptr fiber, std::thread::id thread);
 
         bool attach_all();
         bool detach_all();
