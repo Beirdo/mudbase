@@ -24,7 +24,7 @@ namespace mudbase {
 		connection_manager.start(conn);
 	    }
             usleep(100000);
-	    fiber_manager.attach_all();
+	    postamble();
 	    boost::this_fiber::yield();
         }
     }

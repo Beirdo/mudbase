@@ -33,6 +33,7 @@ namespace mudbase {
         FiberContext *context();
 
 	void set_thread(std::thread::id thread);
+	std::thread::id target_thread();
 
 	bool is_attached();
 	void set_attached(bool attached);

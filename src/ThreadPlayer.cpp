@@ -20,7 +20,7 @@ namespace mudbase {
 
         while (!abort_) {
             usleep(100000);
-	    fiber_manager.attach_all();
+	    postamble();
 	    boost::this_fiber::yield();
         }
     }

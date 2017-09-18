@@ -50,7 +50,13 @@ namespace mudbase {
     }
 
     void FiberManager::move_to_thread(const FiberBase_ptr fiber, std::thread::id thread_to) {
+	std::thread::id thread_from = std::this_thread::get_id();
+	std::thread::id target_thread = fiber->target_thread();
+
 	fiber->set_thread(thread_to);
+	if (target_thread == thread_to || thread_to == thread_from) {
+            return;
+	}
 
 	// Stick the context into the set of fibers to move to
         auto search = thread_to_map_.find(thread_to);
@@ -64,12 +70,6 @@ namespace mudbase {
 	std::cout << "Adding fiber " << fiber << " to TO map for thread " << thread_to << std::endl;
         target_deque->push_back(fiber);
 	
-	// Stick the context into the set of fibers to move from
-	std::thread::id thread_from = std::this_thread::get_id();
-	if (thread_from == thread_to) {
-	    return;
-	}
-
         search = thread_from_map_.find(thread_from);
         if (search != thread_from_map_.end()) {
             target_deque = search->second;
@@ -85,8 +85,6 @@ namespace mudbase {
 	std::thread::id thread = std::this_thread::get_id();
 	boost::fibers::context *active = boost::fibers::context::active();
 
-	//std::cout << "Attaching for thread " << thread << std::endl;
-
         auto search = thread_to_map_.find(thread);
         if (search == thread_to_map_.end()) {
             return false;
@@ -94,15 +92,20 @@ namespace mudbase {
 
 	bool found = false;
         FiberDeque *target_deque = search->second;
+	std::cout << "Attaching for thread " << thread << " size " << target_deque->size() << std::endl;
         for (auto it = target_deque->begin(); it != target_deque->end() ; ) {
 	    FiberBase_ptr fiber = *it;
             FiberContext *context = fiber->context();
 	    bool foundThis = false;
+	    if (fiber->is_attached()) {
+		it++;
+		continue;
+            }
+	    std::cout << "Attach Fiber " << fiber << " Context " << context << " Active " << active << " Thread " << thread << std::endl;
 	    if (context != nullptr && context != active &&
-	        context->get_scheduler() == nullptr &&
-	       	context->ready_is_linked()) {
-	        std::cout << "Attach Fiber " << fiber << " Context " << context << std::endl;
-	        std::cout << " Active " << active << " Scheduler " << context->get_scheduler() << " Thread " << thread << std::endl;
+	        context->get_scheduler() == nullptr) {
+//	       	context->ready_is_linked()) {
+	        std::cout << "Scheduler " << context->get_scheduler() << std::endl;
 		std::cout << "Attaching" << std::endl;
                 active->attach(context);
 		fiber->set_attached(true);
@@ -124,8 +127,6 @@ namespace mudbase {
 	std::thread::id thread = std::this_thread::get_id();
 	boost::fibers::context *active = boost::fibers::context::active();
 
-	//std::cout << "Detaching for thread " << thread << std::endl;
-
         auto search = thread_from_map_.find(thread);
         if (search == thread_from_map_.end()) {
             return false;
@@ -133,15 +134,21 @@ namespace mudbase {
 
 	bool found = false;
         FiberDeque *target_deque = search->second;
+	std::cout << "Detaching for thread " << thread << " size " << target_deque->size() << std::endl;
+
         for (auto it = target_deque->begin(); it != target_deque->end() ; ) {
 	    FiberBase_ptr fiber = *it;
             FiberContext *context = fiber->context();
+	    if (!fiber->is_attached()) {
+		it++;
+		continue;
+	    }
+	    std::cout << "Detach Fiber " << fiber << " Context " << context << " Active " << active << " Thread " << thread << std::endl;
 	    bool foundThis = false;
 	    if (context != nullptr && context != active &&
 	        context->get_scheduler() != nullptr &&
 		!context->ready_is_linked()) {
-	        std::cout << "Detach Fiber " << fiber << " Context " << context << std::endl;
-	        std::cout << " Active " << active << " Scheduler " << context->get_scheduler() << " Thread " << thread << std::endl;
+	        std::cout << " Scheduler " << context->get_scheduler() << std::endl;
                 std::cout << "Detaching" << std::endl;
                 context->detach();
 		fiber->set_attached(false);
