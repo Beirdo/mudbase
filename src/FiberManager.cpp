@@ -97,15 +97,16 @@ namespace mudbase {
 	    FiberBase_ptr fiber = *it;
             FiberContext *context = fiber->context();
 	    bool foundThis = false;
-	    if (fiber->is_attached()) {
+	    if (fiber->is_attached() || context == nullptr) {
 		it++;
 		continue;
             }
-	    std::cout << "Attach Fiber " << fiber << " Context " << context << " Active " << active << " Thread " << thread << std::endl;
-	    if (context != nullptr && context != active &&
-	        context->get_scheduler() == nullptr) {
-//	       	context->ready_is_linked()) {
-	        std::cout << "Scheduler " << context->get_scheduler() << std::endl;
+
+	    std::cout << "Detach Fiber " << fiber << " Context " << context << " Active " << active << " Thread " << thread << " Scheduler " << context->get_scheduler() << " linked " << context->ready_is_linked() << std::endl;
+
+	    if (context != active &&
+	        context->get_scheduler() == nullptr &&
+	       	context->ready_is_linked()) {
 		std::cout << "Attaching" << std::endl;
                 active->attach(context);
 		fiber->set_attached(true);
@@ -139,16 +140,14 @@ namespace mudbase {
         for (auto it = target_deque->begin(); it != target_deque->end() ; ) {
 	    FiberBase_ptr fiber = *it;
             FiberContext *context = fiber->context();
-	    if (!fiber->is_attached()) {
+	    if (!fiber->is_attached() || context == nullptr) {
 		it++;
 		continue;
 	    }
-	    std::cout << "Detach Fiber " << fiber << " Context " << context << " Active " << active << " Thread " << thread << std::endl;
+	    std::cout << "Detach Fiber " << fiber << " Context " << context << " Active " << active << " Thread " << thread << " Scheduler " << context->get_scheduler() << " linked " << context->ready_is_linked() << std::endl;
 	    bool foundThis = false;
-	    if (context != nullptr && context != active &&
-	        context->get_scheduler() != nullptr &&
+	    if (context != active && context->get_scheduler() != nullptr &&
 		!context->ready_is_linked()) {
-	        std::cout << " Scheduler " << context->get_scheduler() << std::endl;
                 std::cout << "Detaching" << std::endl;
                 context->detach();
 		fiber->set_attached(false);
