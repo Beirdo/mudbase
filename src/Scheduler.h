@@ -64,6 +64,7 @@ namespace mudbase {
                 rqueue_.push_back(*ctx);
 	    } else {
 		ThreadedScheduler *sched = thread_manager.find_scheduler(ctx_thread);
+		std::cout << "Scheduler found: " << sched << std::endl;
 		if (sched == nullptr) {
 		    // If the destination is invalid, keep it here
 		    rqueue_.push_back(*ctx);
@@ -91,6 +92,7 @@ namespace mudbase {
         virtual void property_change(boost::fibers::context * ctx,
 		                     ThreadedProps & props) noexcept {
             if (!ctx->ready_is_linked()) {
+		std::cout << "Not ready linked" << std::endl;
                 return;
             }
 

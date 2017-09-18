@@ -35,6 +35,7 @@ namespace mudbase {
         }
 
         std::string state = fsm_->do_state_step();
+	std::cout << "New Login state: " << state << std::endl;
         if (state == "Disconnect") {
             connection_->close();
             return false;
@@ -47,9 +48,9 @@ namespace mudbase {
             FiberBase_ptr fiber(new FiberPlaying(connection_));
             fiber_manager.register_fiber(fiber);
             if (connection_->isImmortal()) {
-                set_target_thread(thread_manager.immortal_thread());
+                fiber->set_target_thread(thread_manager.immortal_thread());
             } else {
-                set_target_thread(thread_manager.mortal_thread());
+                fiber->set_target_thread(thread_manager.mortal_thread());
             }
             return false;
         }
