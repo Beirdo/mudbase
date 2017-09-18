@@ -69,7 +69,6 @@ namespace mudbase {
 		    rqueue_.push_back(*ctx);
 		} else {
 	            // Send it to the correct scheduler
-		    ctx->ready_unlink();
 		    sched->awakened(ctx, props);
 		}
             }

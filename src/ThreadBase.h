@@ -34,7 +34,7 @@ namespace mudbase {
             : public boost::enable_shared_from_this<ThreadBase>,
               private boost::noncopyable {
     public:
-        ThreadBase(ThreadManager &manager, barrier *b, ThreadType t = THREAD_UNKNOWN);
+        ThreadBase(barrier *b, ThreadType t = THREAD_UNKNOWN);
 
 	void run();
 
@@ -49,7 +49,6 @@ namespace mudbase {
 
         std::thread thread_;
         bool abort_;
-        ThreadManager &manager_;
         barrier *barrier_;
         ThreadType type_;
 	FiberBase_ptr idle_fiber_;

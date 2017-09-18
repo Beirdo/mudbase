@@ -10,8 +10,8 @@
 
 namespace mudbase {
 
-    FiberPlaying::FiberPlaying(FiberManager &manager, PlayerConnection_ptr conn)
-            : FiberBase(manager), connection_(conn) {
+    FiberPlaying::FiberPlaying(PlayerConnection_ptr conn)
+            : connection_(conn) {
     }
 
     bool FiberPlaying::fiber_func() {

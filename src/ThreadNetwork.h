@@ -15,8 +15,7 @@ namespace mudbase {
 
     class ThreadNetwork : public ThreadBase {
     public:
-        ThreadNetwork(ThreadManager &manager, barrier *b, std::string address,
-	              std::string port);
+        ThreadNetwork(barrier *b, std::string address, std::string port);
 
     protected:
         virtual void thread_func();

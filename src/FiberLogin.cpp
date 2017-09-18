@@ -12,8 +12,8 @@
 
 namespace mudbase {
 
-    FiberLogin::FiberLogin(FiberManager &manager, PlayerConnection_ptr conn)
-            : FiberBase(manager), connection_(conn), fsm_(new LoginSM(conn)) {
+    FiberLogin::FiberLogin(PlayerConnection_ptr conn)
+            : connection_(conn), fsm_(new LoginSM(conn)) {
     }
 
     bool FiberLogin::fiber_func() {
@@ -44,12 +44,12 @@ namespace mudbase {
             // create the player fiber, put it in appropriate thread
             // TODO
 
-            FiberBase_ptr fiber(new FiberPlaying(fiber_manager, connection_));
+            FiberBase_ptr fiber(new FiberPlaying(connection_));
             fiber_manager.register_fiber(fiber);
             if (connection_->isImmortal()) {
-                fiber_manager.move_to_thread(fiber, thread_manager.immortal_thread());
+                set_target_thread(thread_manager.immortal_thread());
             } else {
-                fiber_manager.move_to_thread(fiber, thread_manager.mortal_thread());
+                set_target_thread(thread_manager.mortal_thread());
             }
             return false;
         }

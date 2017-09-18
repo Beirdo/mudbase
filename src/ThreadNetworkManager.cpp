@@ -9,9 +9,8 @@
 
 namespace mudbase {
 
-    ThreadNetworkManager::ThreadNetworkManager(ThreadManager &manager,
-		                               barrier *b)
-            : ThreadBase(manager, b, THREAD_NETWORK_MANAGER) {
+    ThreadNetworkManager::ThreadNetworkManager(barrier *b)
+            : ThreadBase(b, THREAD_NETWORK_MANAGER) {
     }
 
     void ThreadNetworkManager::thread_func() {

@@ -37,8 +37,6 @@ namespace mudbase {
 
         std::size_t count();
 
-        void move_to_thread(FiberBase_ptr fiber, std::thread::id thread);
-
     private:
         std::size_t fiber_count_;
         std::mutex mtx_count_;

@@ -13,7 +13,7 @@ namespace mudbase {
 
     class FiberIdle : public FiberBase {
     public:
-        FiberIdle(FiberManager &manager);
+        FiberIdle();
 
     protected:
         virtual bool fiber_func();

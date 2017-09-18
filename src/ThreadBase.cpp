@@ -15,22 +15,21 @@
 
 namespace mudbase {
 
-    ThreadBase::ThreadBase(ThreadManager &manager, barrier *b, ThreadType t)
-            : manager_(manager), barrier_(b), abort_(false), thread_(),
-	      type_(t), idle_fiber_() {
+    ThreadBase::ThreadBase(barrier *b, ThreadType t)
+            : barrier_(b), abort_(false), thread_(), type_(t), idle_fiber_() {
     }
 
     void ThreadBase::run() {
         boost::fibers::use_scheduling_algorithm<ThreadedScheduler>();
 
-        manager_.register_thread(shared_from_this(), type_);
+        thread_manager.register_thread(shared_from_this(), type_);
 	std::cout << "registered" << std::endl;
-        manager_.init_thread(barrier_);
+        thread_manager.init_thread(barrier_);
         std::cout << "thread started " << std::this_thread::get_id() << " type " << type_ << std::endl;
 
-	idle_fiber_.reset(new FiberIdle(fiber_manager));
+	idle_fiber_.reset(new FiberIdle());
         fiber_manager.register_fiber(idle_fiber_);
-	fiber_manager.move_to_thread(idle_fiber_, id());
+	idle_fiber_->set_target_thread(id());
 
 	thread_func();
     }
@@ -47,7 +46,7 @@ namespace mudbase {
         if (!abort) {
             abort_ = true;
             thread_.join();
-            manager_.deregister_thread(shared_from_this());
+            thread_manager.deregister_thread(shared_from_this());
         }
     }
 

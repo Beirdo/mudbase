@@ -12,7 +12,7 @@ namespace mudbase {
 
     class FiberPlaying : public FiberBase {
     public:
-        FiberPlaying(FiberManager &manager, PlayerConnection_ptr conn);
+        FiberPlaying(PlayerConnection_ptr conn);
 
     protected:
         virtual bool fiber_func();

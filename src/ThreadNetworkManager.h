@@ -16,7 +16,7 @@ namespace mudbase {
 
     class ThreadNetworkManager : public ThreadBase {
     public:
-        ThreadNetworkManager(ThreadManager &manager, barrier *b);
+        ThreadNetworkManager(barrier *b);
 
 	void add_connection(TCPConnection_ptr c);
 

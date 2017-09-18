@@ -34,25 +34,24 @@ namespace mudbase {
 	std::thread::id mainThread = std::this_thread::get_id();
 	boost::fibers::use_scheduling_algorithm<ThreadedScheduler>();
 
-	FiberBase_ptr idle_fiber(new FiberIdle(fiber_manager));
+	FiberBase_ptr idle_fiber(new FiberIdle());
         fiber_manager.register_fiber(idle_fiber);
-	fiber_manager.move_to_thread(idle_fiber, mainThread);
+	idle_fiber->set_target_thread(mainThread);
 
         barrier b(6);
-        ThreadBase_ptr user_thread(new ThreadPlayer(thread_manager, &b, THREAD_PLAYER));
+        ThreadBase_ptr user_thread(new ThreadPlayer(&b, THREAD_PLAYER));
 	user_thread->start();
 
-        ThreadBase_ptr admin_thread(new ThreadPlayer(thread_manager, &b, THREAD_ADMIN));
+        ThreadBase_ptr admin_thread(new ThreadPlayer(&b, THREAD_ADMIN));
 	admin_thread->start();
 
-        ThreadBase_ptr login_thread(new ThreadPlayer(thread_manager, &b, THREAD_LOGIN));
+        ThreadBase_ptr login_thread(new ThreadPlayer(&b, THREAD_LOGIN));
 	login_thread->start();
 
-	ThreadBase_ptr networkmgr_thread(new ThreadNetworkManager(thread_manager, &b));
+	ThreadBase_ptr networkmgr_thread(new ThreadNetworkManager(&b));
 	networkmgr_thread->start();
 
-	ThreadBase_ptr network_thread(new ThreadNetwork(thread_manager, &b,
-				                        "0.0.0.0", "7001"));
+	ThreadBase_ptr network_thread(new ThreadNetwork(&b, "0.0.0.0", "7001"));
 	network_thread->start();
 
         b.wait(); /*< sync with other threads: allow them to start processing >*/

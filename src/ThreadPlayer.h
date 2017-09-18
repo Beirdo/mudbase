@@ -14,7 +14,7 @@ namespace mudbase {
 
     class ThreadPlayer : public ThreadBase {
     public:
-        ThreadPlayer(ThreadManager &manager, barrier *b, ThreadType t);
+        ThreadPlayer(barrier *b, ThreadType t);
 
     protected:
         virtual void thread_func();

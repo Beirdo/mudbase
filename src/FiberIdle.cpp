@@ -9,8 +9,8 @@
 
 namespace mudbase {
 
-    FiberIdle::FiberIdle(FiberManager &manager)
-            : FiberBase(manager) {
+    FiberIdle::FiberIdle()
+            : FiberBase() {
     }
 
     bool FiberIdle::fiber_func() {

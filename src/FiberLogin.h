@@ -13,7 +13,7 @@ namespace mudbase {
 
     class FiberLogin : public FiberBase {
     public:
-        FiberLogin(FiberManager &manager, PlayerConnection_ptr conn);
+        FiberLogin(PlayerConnection_ptr conn);
 
     protected:
         virtual bool fiber_func();

@@ -23,10 +23,10 @@ namespace mudbase {
 
     void PlayerConnection::start() {
 	std::cout << "Creating login fiber" << std::endl;
-        fiber_.reset(new FiberLogin(fiber_manager, shared_from_this()));
+        fiber_.reset(new FiberLogin(shared_from_this()));
         fiber_manager.register_fiber(fiber_);
 	std::cout << "Moving fiber to login thread" << std::endl;
-        fiber_manager.move_to_thread(fiber_, thread_manager.login_thread());
+        fiber_->set_target_thread(thread_manager.login_thread());
     }
 
     TCPConnection_ptr PlayerConnection::connection() {

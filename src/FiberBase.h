@@ -24,7 +24,7 @@ namespace mudbase {
             : public boost::enable_shared_from_this<FiberBase>,
               private boost::noncopyable {
     public:
-        FiberBase(FiberManager &manager);
+        FiberBase();
 
         void start();
 
@@ -32,24 +32,17 @@ namespace mudbase {
 
         void run();
 
-        FiberContext *context();
 	Fiber &fiber();
 
-	void set_thread(std::thread::id thread);
+	void set_target_thread(std::thread::id thread);
 	std::thread::id target_thread();
-
-	bool is_attached();
-	void set_attached(bool attached);
 
     protected:
         virtual bool fiber_func() = 0;
 
+        void move_to_thread(std::thread::id thread);
+
         bool abort_;
-        FiberManager &manager_;
-
-        FiberContext *context_;
-
-	bool attached_;
 	std::thread::id target_thread_; 
 	Fiber fiber_;
     };
