@@ -31,6 +31,7 @@ namespace mudbase {
         void run();
 
         FiberContext *context();
+	boost::fibers::fiber *fiber();
 
 	void set_thread(std::thread::id thread);
 	std::thread::id target_thread();
@@ -47,7 +48,8 @@ namespace mudbase {
         FiberContext *context_;
 
 	bool attached_;
-	std::thread::id target_thread_;
+	std::thread::id target_thread_; 
+	boost::fibers::fiber *fiber_;
     };
 
     typedef boost::shared_ptr<FiberBase> FiberBase_ptr;

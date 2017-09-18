@@ -39,17 +39,12 @@ namespace mudbase {
 
         void move_to_thread(const FiberBase_ptr fiber, std::thread::id thread);
 
-        bool attach_all();
-        bool detach_all();
-
     private:
         std::size_t fiber_count_;
         std::mutex mtx_count_;
         boost::fibers::condition_variable_any cnd_count_;
 
         std::set<FiberBase_ptr> fibers_;
-	FiberThreadMap thread_to_map_;
-	FiberThreadMap thread_from_map_;
     };
 
 } // namespace mudbase

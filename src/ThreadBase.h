@@ -44,8 +44,6 @@ namespace mudbase {
 
 	std::thread::id id();
 
-	void postamble();
-
     protected:
         virtual void thread_func() = 0;
 

@@ -10,6 +10,7 @@
 #include "ThreadBase.h"
 #include "ThreadManager.h"
 #include "FiberIdle.h"
+#include "Scheduler.h"
 #include "main.h"
 
 namespace mudbase {
@@ -20,7 +21,8 @@ namespace mudbase {
     }
 
     void ThreadBase::run() {
-        boost::fibers::use_scheduling_algorithm<boost::fibers::algo::round_robin>();
+        boost::fibers::use_scheduling_algorithm<ThreadedScheduler>();
+
         manager_.register_thread(shared_from_this(), type_);
 	std::cout << "registered" << std::endl;
         manager_.init_thread(barrier_);
@@ -52,22 +54,5 @@ namespace mudbase {
     std::thread::id ThreadBase::id() {
 	return thread_.get_id();
     }
-
-    void ThreadBase::postamble() {
-	std::thread::id thread = std::this_thread::get_id();
-	std::cout << "Postamble thread " << thread << std::endl;
-
-        // Detach all fibers from this thread that are attached
-        if (fiber_manager.detach_all()) {
-	    std::cout << "Detaching fibers from thread " << thread << std::endl;
-        }
-
-        // Make sure to take any fibers still on this thread but not attached
-        if (fiber_manager.attach_all()) {
-	    std::cout << "Attaching fibers to thread " << thread << std::endl;
-        }
-    }
-
-	
 
 } // namespace mudbase

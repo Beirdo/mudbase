@@ -12,7 +12,7 @@ namespace mudbase {
 
     FiberBase::FiberBase(FiberManager &manager)
             : manager_(manager), abort_(false), attached_(false),
-	      context_(nullptr) {
+	      context_(nullptr), fiber_(nullptr) {
 	start();
     }
 
@@ -51,11 +51,16 @@ namespace mudbase {
     void FiberBase::start() {
         abort_ = false;
 	attached_ = true;
-        boost::fibers::fiber([this]() { this->run(); }).detach();
+        fiber_ = new boost::fibers::fiber([this]() { this->run(); });
+	fiber_->detach();
     }
 
     void FiberBase::stop() {
         abort_ = true;
+    }
+
+    boost::fibers::fiber *FiberBase::fiber() {
+        return fiber_;
     }
 
     FiberContext *FiberBase::context() {

@@ -11,6 +11,7 @@
 #include <thread>
 #include <mutex>
 #include <set>
+#include <map>
 #include <boost/assert.hpp>
 #include <boost/fiber/all.hpp>
 #include "barrier.h"
@@ -19,6 +20,7 @@
 namespace mudbase {
 
     typedef std::unique_lock<std::mutex> lock_t;
+    class ThreadedScheduler;
 
     class ThreadManager {
     public:
@@ -39,12 +41,15 @@ namespace mudbase {
         std::thread::id &immortal_thread();
 
         ThreadBase_ptr network_manager();
+	ThreadedScheduler *find_scheduler(std::thread::id thread);
+	void add_scheduler(std::thread::id thread, ThreadedScheduler *sched);
 
     private:
         std::size_t thread_count_;
         std::mutex mtx_count_;
         boost::fibers::condition_variable_any cnd_count_;
 
+	std::map<std::thread::id, ThreadedScheduler *> schedulerMap_;
         std::set<ThreadBase_ptr> threads_;
 
         std::thread::id login_thread_;

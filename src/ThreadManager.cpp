@@ -4,6 +4,7 @@
 
 #include "ThreadBase.h"
 #include "ThreadManager.h"
+#include "Scheduler.h"
 #include <boost/bind.hpp>
 
 namespace mudbase {
@@ -85,6 +86,20 @@ namespace mudbase {
 
     ThreadBase_ptr ThreadManager::network_manager() {
 	return network_manager_;
+    }
+
+    ThreadedScheduler *ThreadManager::find_scheduler(std::thread::id thread) {
+        auto search = schedulerMap_.find(thread);
+        if (search == schedulerMap_.end()) {
+            return nullptr;
+        }
+	return search->second;
+    }
+
+    void ThreadManager::add_scheduler(std::thread::id thread, ThreadedScheduler *sched) {
+	std::cout << "Scheduler for thread " << thread << " Scheduler: " << sched << std::endl;
+	std::pair<std::thread::id, ThreadedScheduler *> item(thread, sched);
+	schedulerMap_.insert(item);
     }
 
 } // namespace mudbase

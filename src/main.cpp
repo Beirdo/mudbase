@@ -19,6 +19,7 @@
 #include "ThreadNetwork.h"
 #include "ThreadNetworkManager.h"
 #include "TCPConnectionManager.h"
+#include "Scheduler.h"
 #include "main.h"
 
 namespace mudbase {
@@ -31,6 +32,7 @@ namespace mudbase {
         std::cout << "main thread started " << std::this_thread::get_id() << std::endl;
 
 	std::thread::id mainThread = std::this_thread::get_id();
+	boost::fibers::use_scheduling_algorithm<ThreadedScheduler>();
 
 	FiberBase_ptr idle_fiber(new FiberIdle(fiber_manager));
         fiber_manager.register_fiber(idle_fiber);
