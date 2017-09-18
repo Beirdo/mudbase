@@ -4,10 +4,20 @@
 
 #include "TCPConnection.h"
 #include "TCPConnectionManager.h"
+#include "ThreadNetworkManager.h"
+#include "main.h"
 #include <algorithm>
 #include <boost/bind.hpp>
 
 namespace mudbase {
+    void TCPConnectionManager::threaded_start(TCPConnection_ptr c) {
+	ThreadBase *threadPtr = thread_manager.network_manager().get();
+	ThreadNetworkManager *thread = static_cast<ThreadNetworkManager*>(threadPtr);
+
+	std::cout << "Inserting threaded" << std::endl;
+	thread->add_connection(c);
+    }
+
     void TCPConnectionManager::start(TCPConnection_ptr c) {
 	std::cout << "Inserting" << std::endl;
         connections_.insert(c);

@@ -7,11 +7,13 @@
 
 #include "FiberManager.h"
 #include "ThreadManager.h"
+#include "TCPConnectionManager.h"
 
 namespace mudbase {
 
     extern FiberManager fiber_manager;
     extern ThreadManager thread_manager;
+    extern TCPConnectionManager connection_manager;
 
 }
 

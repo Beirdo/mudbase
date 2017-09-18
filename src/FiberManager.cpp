@@ -49,33 +49,40 @@ namespace mudbase {
         BOOST_ASSERT(0 == fiber_count_);
     }
 
-    void FiberManager::move_to_thread(const FiberBase_ptr &fiber, std::thread::id thread) {
-	fiber->set_thread(thread);
+    void FiberManager::move_to_thread(const FiberBase_ptr &fiber, std::thread::id thread_to) {
+	fiber->set_thread(thread_to);
         FiberContext *context = fiber->context();
 	if (context == nullptr) {
+            std::cout << "No context" << std::endl;
             return;
 	}
 
 	// Stick the context into the set of fibers to move to
-        auto search = thread_to_map_.find(thread);
+        auto search = thread_to_map_.find(thread_to);
         FiberContextSet *target_set;
         if (search != thread_to_map_.end()) {
             target_set = search->second;
         } else {
             target_set = new FiberContextSet();
-            thread_to_map_.insert(FiberThreadPair(thread, target_set));
+            thread_to_map_.insert(FiberThreadPair(thread_to, target_set));
         }
+	std::cout << "Adding context " << context << " to TO map for thread " << thread_to << std::endl;
         target_set->insert(context);
 	
 	// Stick the context into the set of fibers to move from
-	thread = std::this_thread::get_id();
-        search = thread_from_map_.find(thread);
+	std::thread::id thread_from = std::this_thread::get_id();
+	if (thread_from == thread_to) {
+	    return;
+	}
+
+        search = thread_from_map_.find(thread_from);
         if (search != thread_from_map_.end()) {
             target_set = search->second;
         } else {
             target_set = new FiberContextSet();
-            thread_from_map_.insert(FiberThreadPair(thread, target_set));
+            thread_from_map_.insert(FiberThreadPair(thread_from, target_set));
         }
+	std::cout << "Adding context " << context << " to FROM map for thread " << thread_from << std::endl;
         target_set->insert(context);
     }
 
@@ -94,6 +101,7 @@ namespace mudbase {
 	    std::cout << "Context " << context << std::endl;
 	    if (context != nullptr && context != active &&
 		context->get_scheduler() == nullptr) {
+		std::cout << "Attaching" << std::endl;
                 active->attach(context);
 		found = true;
 	    }
@@ -117,6 +125,7 @@ namespace mudbase {
 	    std::cout << "Context " << context << std::endl;
 	    if (context != nullptr && context != active &&
 		context->get_scheduler() != nullptr) {
+		std::cout << "Detaching" << std::endl;
                 context->detach();
 		found = true;
 	    }

@@ -44,9 +44,6 @@ namespace mudbase {
 
         /// Acceptor used to listen for incoming connections.
         boost::asio::ip::tcp::acceptor acceptor_;
-
-        /// The connection manager which owns all live connections.
-        TCPConnectionManager connection_manager_;
     };
 
     typedef boost::shared_ptr<TCPServer> TCPServer_ptr;

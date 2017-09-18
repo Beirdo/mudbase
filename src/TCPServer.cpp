@@ -6,14 +6,14 @@
 #include <boost/bind.hpp>
 #include <boost/make_shared.hpp>
 #include "barrier.h"
+#include "main.h"
 
 namespace mudbase {
 
     TCPServer::TCPServer(const std::string &address, const std::string &port)
             : io_service_(),
               signals_(io_service_),
-              acceptor_(io_service_),
-              connection_manager_() {
+              acceptor_(io_service_) {
         // Register to handle the signals that indicate when the server should exit.
         // It is safe to register for the same signal multiple times in a program,
         // provided all registration for the specified signal is made through Asio.
@@ -46,7 +46,7 @@ namespace mudbase {
 
     void TCPServer::start_accept() {
 	std::cout << "Accepting connections" << std::endl;
-        TCPConnection_ptr new_connection_(new TCPConnection(io_service_, connection_manager_));
+        TCPConnection_ptr new_connection_(new TCPConnection(io_service_, connection_manager));
 
         acceptor_.async_accept(new_connection_->socket(),
                                boost::bind(&TCPServer::handle_accept, this,
@@ -63,7 +63,7 @@ namespace mudbase {
 
         if (!e) {
 	    std::cout << "New connection" << std::endl;
-            connection_manager_.start(connection);
+            connection_manager.threaded_start(connection);
         }
 
         start_accept();
@@ -74,7 +74,7 @@ namespace mudbase {
         // operations. Once all operations have finished the io_service::run() call
         // will exit.
         acceptor_.close();
-        connection_manager_.stop_all();
+        connection_manager.stop_all();
     }
 
 } // namespace mudbase

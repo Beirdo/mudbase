@@ -25,6 +25,9 @@ namespace mudbase {
             case THREAD_PLAYER:
                 mortal_thread_ = thread->id();
                 break;
+	    case THREAD_NETWORK_MANAGER:
+		network_manager_ = thread;
+		break;
             default:
                 break;
         }
@@ -78,6 +81,10 @@ namespace mudbase {
 
     std::thread::id &ThreadManager::immortal_thread() {
         return immortal_thread_;
+    }
+
+    ThreadBase_ptr ThreadManager::network_manager() {
+	return network_manager_;
     }
 
 } // namespace mudbase

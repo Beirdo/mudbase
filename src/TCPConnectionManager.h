@@ -15,6 +15,9 @@ namespace mudbase {
     class TCPConnectionManager
             : private boost::noncopyable {
     public:
+        /// Add the specified connection to the manager thread
+        void threaded_start(TCPConnection_ptr c);
+	
         /// Add the specified connection to the manager and start it
         void start(TCPConnection_ptr c);
 

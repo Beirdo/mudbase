@@ -38,6 +38,8 @@ namespace mudbase {
         std::thread::id &mortal_thread();
         std::thread::id &immortal_thread();
 
+        ThreadBase_ptr network_manager();
+
     private:
         std::size_t thread_count_;
         std::mutex mtx_count_;
@@ -48,6 +50,8 @@ namespace mudbase {
         std::thread::id login_thread_;
         std::thread::id mortal_thread_;
         std::thread::id immortal_thread_;
+
+	ThreadBase_ptr network_manager_;
     };
 
 } // namespace mudbase
