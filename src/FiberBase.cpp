@@ -17,7 +17,7 @@ namespace mudbase {
     }
 
     void FiberBase::run() {
-	while (1) {
+	while (!abort_) {
 	    std::thread::id thread = std::this_thread::get_id();
 
 	    if (thread != target_thread_) {
