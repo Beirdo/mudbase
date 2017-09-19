@@ -34,7 +34,7 @@ namespace mudbase {
     }
 
     bool PlayerConnection::hasInput() {
-	std::cout << "Input queue empty: " << connection_->inputQueue().empty() << std::endl;
+	//std::cout << "Input queue empty: " << connection_->inputQueue().empty() << std::endl;
         return !connection_->inputQueue().empty();
     }
 

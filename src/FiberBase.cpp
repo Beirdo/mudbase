@@ -38,7 +38,7 @@ namespace mudbase {
         abort_ = false;
         fiber_ = boost::fibers::fiber([this]() { this->run(); });
 	fiber_.detach();
-	std::cout << "Fiber started" << std::endl;
+	// std::cout << "Fiber started" << std::endl;
     }
 
     void FiberBase::stop() {

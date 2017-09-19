@@ -16,7 +16,6 @@ namespace mudbase {
         ThreadedProps(boost::fibers::context * ctx):
             boost::fibers::fiber_properties(ctx),
             thread_(std::this_thread::get_id()) {
-            std::cout << "Context: " << ctx << " Thread: " << thread_ << std::endl;
         }
 
 	std::thread::id get_thread() const {
@@ -64,12 +63,13 @@ namespace mudbase {
                 rqueue_.push_back(*ctx);
 	    } else {
 		ThreadedScheduler *sched = thread_manager.find_scheduler(ctx_thread);
-		std::cout << "Scheduler found: " << sched << std::endl;
-		if (sched == nullptr) {
+		/// std::cout << "Scheduler found: " << sched << " Thread " << ctx_thread << std::endl;
+		if (sched == nullptr || ctx->is_context(boost::fibers::type::pinned_context)) {
 		    // If the destination is invalid, keep it here
 		    rqueue_.push_back(*ctx);
 		} else {
 	            // Send it to the correct scheduler
+		    ctx->detach();
 		    sched->awakened(ctx, props);
 		}
             }
@@ -82,6 +82,10 @@ namespace mudbase {
             }
             boost::fibers::context *ctx(&rqueue_.front());
             rqueue_.pop_front();
+	    if (!ctx->is_context(boost::fibers::type::pinned_context) &&
+	        ctx->get_scheduler() == nullptr) {
+	        boost::fibers::context::active()->attach(ctx);
+            }
             return ctx;
         }
 
