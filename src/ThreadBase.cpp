@@ -16,14 +16,13 @@
 namespace mudbase {
 
     ThreadBase::ThreadBase(barrier *b, ThreadType t)
-            : barrier_(b), abort_(false), thread_(), type_(t), idle_fiber_() {
+            : abort_(false), thread_(), barrier_(b), type_(t), idle_fiber_() {
     }
 
     void ThreadBase::run() {
         boost::fibers::use_scheduling_algorithm<ThreadedScheduler>();
 
         thread_manager.register_thread(shared_from_this(), type_);
-	std::cout << "registered" << std::endl;
         thread_manager.init_thread(barrier_);
         std::cout << "thread started " << std::this_thread::get_id() << " type " << type_ << std::endl;
 
@@ -32,22 +31,44 @@ namespace mudbase {
 	idle_fiber_->set_target_thread(id());
 
 	thread_func();
+
+	stop(false);
     }
 
     void ThreadBase::start() {
-	std::cout << "Start type " << type_ << std::endl;
         abort_ = false;
-	std::cout << "init_thread" << std::endl;
         thread_ = std::thread(boost::bind(&ThreadBase::run, shared_from_this()));
-	std::cout << "bound" << std::endl;
     }
 
-    void ThreadBase::stop() {
-        if (!abort) {
+    void ThreadBase::stop(bool do_join) {
+        if (!abort_) {
+	    lock_t lk(mtx_abort_);
             abort_ = true;
-            thread_.join();
-            thread_manager.deregister_thread(shared_from_this());
+	    lk.unlock();
+	    cnd_abort_.notify_all();
+	    std::cout << "Stop done" << std::endl;
         }
+
+	if (abort_ && do_join) {
+	    std::cout << "About to deregister" << std::endl;
+            thread_manager.deregister_thread(shared_from_this());
+	    std::cout << "Deregistered" << std::endl;
+	    if (thread_.joinable()) {
+		std::cout << "Joining " << id() << " from " << std::this_thread::get_id() << std::endl;
+                thread_.join();
+	    }
+	}
+    }
+
+    bool ThreadBase::running() {
+	return thread_.joinable();
+    }
+
+    void ThreadBase::wait() {
+	lock_t lk(mtx_abort_);
+	bool *pAbort = &abort_;
+	cnd_abort_.wait(lk, [pAbort]() { return *pAbort; });
+	std::cout << "Wait finished" << std::endl;
     }
 
     std::thread::id ThreadBase::id() {

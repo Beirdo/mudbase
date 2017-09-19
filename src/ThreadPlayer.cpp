@@ -22,6 +22,7 @@ namespace mudbase {
             usleep(100000);
 	    boost::this_fiber::yield();
         }
+	std::cout << "ThreadPlayer type " << type_ << " done" << std::endl;
     }
 
 }

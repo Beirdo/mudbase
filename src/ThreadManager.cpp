@@ -40,7 +40,6 @@ namespace mudbase {
 
     void ThreadManager::deregister_thread(ThreadBase_ptr thread) {
         threads_.erase(thread);
-        thread->stop();
 
         lock_t lk(mtx_count_);
         if (0 == --thread_count_) {
@@ -51,7 +50,7 @@ namespace mudbase {
 
     void ThreadManager::shutdown() {
         std::for_each(threads_.begin(), threads_.end(),
-                      boost::bind(&ThreadBase::stop, _1));
+                      boost::bind(&ThreadBase::stop, _1, true));
         threads_.clear();
         lock_t lk(mtx_count_);
         thread_count_ = 0;

@@ -10,12 +10,15 @@
 #include <boost/noncopyable.hpp>
 #include <boost/shared_ptr.hpp>
 #include <boost/enable_shared_from_this.hpp>
+#include <condition_variable>
+#include <mutex>
 #include "barrier.h"
 #include "FiberBase.h"
 
 namespace mudbase {
 
     class ThreadManager;
+    typedef std::unique_lock<std::mutex> lock_t;
 
     class ThreadBase;
 
@@ -40,15 +43,22 @@ namespace mudbase {
 
         void start();
 
-        void stop();
+        void stop(bool do_join = true);
+
+	void wait();
 
 	std::thread::id id();
+
+	bool running();
 
     protected:
         virtual void thread_func() = 0;
 
-        std::thread thread_;
         bool abort_;
+        std::mutex mtx_abort_;
+        boost::fibers::condition_variable_any cnd_abort_;
+
+        std::thread thread_;
         barrier *barrier_;
         ThreadType type_;
 	FiberBase_ptr idle_fiber_;

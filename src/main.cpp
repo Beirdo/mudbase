@@ -9,6 +9,7 @@
 #include <iostream>
 #include <mutex>
 #include <thread>
+#include <stdlib.h>
 #include <boost/fiber/all.hpp>
 #include "barrier.h"
 #include "FiberBase.h"
@@ -57,8 +58,10 @@ namespace mudbase {
         b.wait(); /*< sync with other threads: allow them to start processing >*/
 	std::cout << "Threads synced" << std::endl;
 
-        fiber_manager.wait();
-        thread_manager.wait();
+	network_thread->wait();
+
+        fiber_manager.shutdown();
+        thread_manager.shutdown();
 
         std::cout << "done." << std::endl;
         return EXIT_SUCCESS;

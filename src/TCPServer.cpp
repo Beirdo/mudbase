@@ -3,6 +3,7 @@
 //
 
 #include "TCPServer.h"
+#include <stdlib.h>
 #include <boost/bind.hpp>
 #include <boost/make_shared.hpp>
 #include "barrier.h"
@@ -42,6 +43,7 @@ namespace mudbase {
         // asynchronous operation outstanding: the asynchronous accept call waiting
         // for new incoming connections.
         io_service_.run();
+	std::cout << "IO Service completed" << std::endl;
     }
 
     void TCPServer::start_accept() {
@@ -73,8 +75,10 @@ namespace mudbase {
         // The server is stopped by cancelling all outstanding asynchronous
         // operations. Once all operations have finished the io_service::run() call
         // will exit.
+	std::cout << "Handling a stop" << std::endl;
         acceptor_.close();
         connection_manager.stop_all();
+	std::cout << "Done handling a stop" << std::endl;
     }
 
 } // namespace mudbase

@@ -835,6 +835,7 @@ namespace mudbase {
     // replaces the old transition table
     BOOST_MSM_EUML_TRANSITION_TABLE((
         Initial == Get_Email
+#if 0
 ,
         Get_Email + input [email_exists && !admin_blocked] == Get_Password,
         Get_Email + input [!email_exists && !admin_blocked] / save_new_email == Confirm_Email,
@@ -903,6 +904,7 @@ namespace mudbase {
         Delete_User + input / not_implemented_yet == Show_Creation_Menu,
         Show_Login_Menu + input / not_implemented_yet == Disconnect,
         Edit_Extra_Descr + input / not_implemented_yet == Disconnect
+#endif
     ), transition_table)
 
 

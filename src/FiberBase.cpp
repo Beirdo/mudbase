@@ -43,6 +43,9 @@ namespace mudbase {
 
     void FiberBase::stop() {
         abort_ = true;
+	if (fiber_.joinable()) {
+	    fiber_.join();
+	}
     }
 
     Fiber &FiberBase::fiber() {
