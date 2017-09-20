@@ -8,8 +8,8 @@ set(Mudbase_VERSION_MINOR 1)
 
 set(PROJECT_SOURCE_DIR src)
 set(CMAKE_CXX_VERSION 11)
-set(CMAKE_BUILD_TYPE Debug)
-#set(CMAKE_BUILD_TYPE Release)
+#set(CMAKE_BUILD_TYPE Debug)
+set(CMAKE_BUILD_TYPE Release)
 include(${PROJECT_SOURCE_DIR}/CMakeLists.txt)
 
 # configure a header file to pass some of the CMake settings
