@@ -1,7 +1,3 @@
-//
-// Created by Gavin on 8/30/2017.
-//
-
 #ifndef MUDBASE_FIBERBASE_H
 #define MUDBASE_FIBERBASE_H
 
@@ -32,11 +28,11 @@ namespace mudbase {
 
         void run();
 
-	Fiber &fiber();
+        Fiber &fiber();
 
-	void set_target_thread(std::thread::id thread);
-	std::thread::id target_thread();
-	bool is_idle();
+        void set_target_thread(std::thread::id thread);
+        std::thread::id target_thread();
+        bool is_idle();
 
     protected:
         virtual bool fiber_func() = 0;
@@ -44,9 +40,9 @@ namespace mudbase {
         void move_to_thread(std::thread::id thread);
 
         bool abort_;
-	std::thread::id target_thread_; 
-	Fiber fiber_;
-	bool idle_;
+        std::thread::id target_thread_; 
+        Fiber fiber_;
+        bool idle_;
     };
 
     typedef boost::shared_ptr<FiberBase> FiberBase_ptr;
@@ -54,3 +50,5 @@ namespace mudbase {
 } // namespace mudbase
 
 #endif //MUDBASE_FIBERBASE_H
+
+// vim:ts=4:sw=4:ai:et:si:sts=4

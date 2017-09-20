@@ -1,7 +1,3 @@
-//
-// Created by Gavin on 8/31/2017.
-//
-
 #include <string>
 #include "PlayerConnection.h"
 #include "LoginSM.h"
@@ -18,3 +14,5 @@ namespace mudbase {
     }
 
 }
+
+// vim:ts=4:sw=4:ai:et:si:sts=4

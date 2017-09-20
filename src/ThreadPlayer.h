@@ -1,7 +1,3 @@
-//
-// Created by Gavin on 8/30/2017.
-//
-
 #ifndef MUDBASE_THREADPLAYER_H
 #define MUDBASE_THREADPLAYER_H
 
@@ -23,3 +19,5 @@ namespace mudbase {
 } // namespace mudbase
 
 #endif //MUDBASE_THREADPLAYER_H
+
+// vim:ts=4:sw=4:ai:et:si:sts=4

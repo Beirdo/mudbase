@@ -1,7 +1,3 @@
-//
-// Created by Gavin on 8/30/2017.
-//
-
 #ifndef MUDBASE_THREADBASE_H
 #define MUDBASE_THREADBASE_H
 
@@ -30,8 +26,8 @@ namespace mudbase {
         THREAD_PLAYER,
         THREAD_ADMIN,
         THREAD_LOGIN,
-	THREAD_NETWORK,
-	THREAD_NETWORK_MANAGER,
+        THREAD_NETWORK,
+        THREAD_NETWORK_MANAGER,
     } ThreadType;
 
     class ThreadBase
@@ -40,17 +36,17 @@ namespace mudbase {
     public:
         ThreadBase(barrier *b, ThreadType t = THREAD_UNKNOWN);
 
-	void run();
+        void run();
 
         void start();
 
         void stop(bool do_join = true);
 
-	void wait();
+        void wait();
 
-	std::thread::id id();
+        std::thread::id id();
 
-	bool running();
+        bool running();
 
     protected:
         virtual void thread_func() = 0;
@@ -62,9 +58,11 @@ namespace mudbase {
         boost::thread thread_;
         barrier *barrier_;
         ThreadType type_;
-	FiberBase_ptr idle_fiber_;
+        FiberBase_ptr idle_fiber_;
     };
 
 } // namespace mudbase
 
 #endif //MUDBASE_THREADBASE_H
+
+// vim:ts=4:sw=4:ai:et:si:sts=4

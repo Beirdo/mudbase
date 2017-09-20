@@ -1,7 +1,3 @@
-//
-// Created by Gavin on 8/30/2017.
-//
-
 #include <unistd.h>
 #include <iostream>
 #include <boost/fiber/all.hpp>
@@ -14,9 +10,7 @@ namespace mudbase {
     }
 
     bool FiberIdle::fiber_func() {
-	// std::cout << "Idle Fiber" << std::endl;
-
-        // If this is the only running fiber, delay 100ms
+        // Just delay 100ms so we don't idle at 100% CPU
         usleep(100000);
 
         // Yield
@@ -24,3 +18,5 @@ namespace mudbase {
     }
 
 } // namespace mudbase
+
+// vim:ts=4:sw=4:ai:et:si:sts=4

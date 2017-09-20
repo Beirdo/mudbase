@@ -1,7 +1,3 @@
-//
-// Created by Gavin on 8/30/2017.
-//
-
 #include <boost/uuid/uuid.hpp>
 #include <boost/uuid/uuid_io.hpp>
 #include <boost/uuid/random_generator.hpp>
@@ -22,10 +18,8 @@ namespace mudbase {
     }
 
     void PlayerConnection::start() {
-	std::cout << "Creating login fiber" << std::endl;
         fiber_.reset(new FiberLogin(shared_from_this()));
         fiber_manager.register_fiber(fiber_);
-	std::cout << "Moving fiber to login thread" << std::endl;
         fiber_->set_target_thread(thread_manager.login_thread());
     }
 
@@ -34,7 +28,6 @@ namespace mudbase {
     }
 
     bool PlayerConnection::hasInput() {
-	//std::cout << "Input queue empty: " << connection_->inputQueue().empty() << std::endl;
         return !connection_->inputQueue().empty();
     }
 
@@ -43,13 +36,13 @@ namespace mudbase {
         std::string &line = inQ.front();
         inQ.pop_front();
 
-	std::cout << "Dequeued '" << line << "'" << std::endl;
+        std::cout << "Dequeued '" << line << "'" << std::endl;
         return line;
     }
 
 
     void PlayerConnection::writeLine(const char *line, bool noCR) {
-	writeLine(std::string(line), noCR);
+        writeLine(std::string(line), noCR);
     }
 
     void PlayerConnection::writeLine(std::string line, bool noCR) {
@@ -65,12 +58,14 @@ namespace mudbase {
     }
 
     bool PlayerConnection::isImmortal() {
-	/// For now, everyone is immort
-	return true;
+        /// TODO: For now, everyone is immort
+        return true;
     }
 
     std::string &PlayerConnection::uuid() {
-	return uuid_;
+        return uuid_;
     }
 
 } // namespace mudbase
+
+// vim:ts=4:sw=4:ai:et:si:sts=4

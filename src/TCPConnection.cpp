@@ -1,7 +1,3 @@
-//
-// Created by Gavin on 8/29/2017.
-//
-
 #include <vector>
 #include <deque>
 #include <string>
@@ -11,7 +7,8 @@
 #include "PlayerConnection.h"
 
 namespace mudbase {
-    TCPConnection::TCPConnection(boost::asio::io_service &io_service, TCPConnectionManager &manager)
+    TCPConnection::TCPConnection(boost::asio::io_service &io_service,
+                                 TCPConnectionManager &manager)
             : socket_(io_service),
               connection_manager_(manager) {
         partial_string_.clear();
@@ -22,13 +19,8 @@ namespace mudbase {
     }
 
     void TCPConnection::start() {
-	std::cout << "Creating Player" << std::endl;
         player_ = PlayerConnection_ptr(new PlayerConnection(shared_from_this()));
-
-	std::cout << "Starting Player" << std::endl;
-	player_->start();
-
-	std::cout << "About to read" << std::endl;
+        player_->start();
         read();
     }
 
@@ -60,7 +52,7 @@ namespace mudbase {
 
     void TCPConnection::handle_read(const boost::system::error_code &e,
                                     std::size_t bytes_transferred) {
-	std::cout << "Reading " << bytes_transferred << " bytes" << std::endl;
+        std::cout << "Reading " << bytes_transferred << " bytes" << std::endl;
         if (!e) {
             // Iterate the input buffer, splitting off lines, which get queued
             char *begin = buffer_.data();
@@ -75,7 +67,7 @@ namespace mudbase {
                         partial_string_.clear();
                     }
                     str.append(std::string(begin, ch - begin - 1));
-		    std::cout << "Got string '" << str << "'" << std::endl;
+                    std::cout << "Enqueuing '" << str << "'" << std::endl;
                     input_queue_.push_back(str);
                     if (*ch == '\r') {
                         ch++;
@@ -98,7 +90,8 @@ namespace mudbase {
     void TCPConnection::close() {
         // Initiate graceful connection closure.
         boost::system::error_code ignored_ec;
-        socket_.shutdown(boost::asio::ip::tcp::socket::shutdown_both, ignored_ec);
+        socket_.shutdown(boost::asio::ip::tcp::socket::shutdown_both,
+                         ignored_ec);
     }
 
     void TCPConnection::write(std::string &line) {
@@ -112,7 +105,7 @@ namespace mudbase {
     }
 
     void TCPConnection::kick() {
-	const char *line = output_queue_.front().c_str();
+        const char *line = output_queue_.front().c_str();
         socket_.async_send(boost::asio::buffer(line, strlen(line)),
                            boost::bind(&TCPConnection::handle_write, shared_from_this(),
                                        boost::asio::placeholders::error));
@@ -129,3 +122,5 @@ namespace mudbase {
         }
     }
 } // namespace mudbase
+
+// vim:ts=4:sw=4:ai:et:si:sts=4

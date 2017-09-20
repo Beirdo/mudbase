@@ -1,7 +1,3 @@
-//
-// Created by Gavin on 8/30/2017.
-//
-
 #include "FiberBase.h"
 #include "FiberManager.h"
 #include "Scheduler.h"
@@ -45,9 +41,11 @@ namespace mudbase {
 
     void FiberManager::wait() {
         lock_t lk(mtx_count_);
-	std::size_t *pCount = &fiber_count_;
+        std::size_t *pCount = &fiber_count_;
         cnd_count_.wait(lk, [pCount]() { return 0 == *pCount; });
         BOOST_ASSERT(0 == fiber_count_);
     }
 
 } // namespace mudbase
+
+// vim:ts=4:sw=4:ai:et:si:sts=4

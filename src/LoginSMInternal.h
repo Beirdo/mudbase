@@ -1,7 +1,3 @@
-//
-// Created by Gavin on 8/31/2017.
-//
-
 #ifndef MUDBASE_LOGINSMINTERNAL_H
 #define MUDBASE_LOGINSMINTERNAL_H
 
@@ -32,5 +28,6 @@ namespace mudbase {
 
 }
 
-
 #endif //MUDBASE_LOGINSMINTERNAL_H
+
+// vim:ts=4:sw=4:ai:et:si:sts=4

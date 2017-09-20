@@ -1,7 +1,3 @@
-//
-// Created by Gavin on 8/30/2017.
-//
-
 #include <unistd.h>
 #include "ThreadNetwork.h"
 #include "FiberIdle.h"
@@ -16,10 +12,12 @@ namespace mudbase {
     }
 
     void ThreadNetwork::thread_func() {
-	server_->run();
-	thread_.detach();
-	std::cout << "ThreadNetwork done" << std::endl;
-	stop(false);
+        server_->run();
+        thread_.detach();
+        std::cout << "ThreadNetwork done" << std::endl;
+        stop(false);
     }
 
 }
+
+// vim:ts=4:sw=4:ai:et:si:sts=4

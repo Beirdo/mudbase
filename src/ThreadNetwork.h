@@ -1,7 +1,3 @@
-//
-// Created by Gavin on 8/30/2017.
-//
-
 #ifndef MUDBASE_THREADNETWORK_H
 #define MUDBASE_THREADNETWORK_H
 
@@ -20,10 +16,11 @@ namespace mudbase {
     protected:
         virtual void thread_func();
 
-	TCPServer_ptr server_;
+        TCPServer_ptr server_;
     };
 
 } // namespace mudbase
 
-
 #endif //MUDBASE_THREADNETWORK_H
+
+// vim:ts=4:sw=4:ai:et:si:sts=4

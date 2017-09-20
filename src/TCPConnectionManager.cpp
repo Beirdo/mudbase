@@ -1,7 +1,3 @@
-//
-// Created by Gavin on 8/29/2017.
-//
-
 #include "TCPConnection.h"
 #include "TCPConnectionManager.h"
 #include "ThreadNetworkManager.h"
@@ -10,18 +6,16 @@
 #include <boost/bind.hpp>
 
 namespace mudbase {
-    void TCPConnectionManager::threaded_start(TCPConnection_ptr c) {
-	ThreadBase *threadPtr = thread_manager.network_manager().get();
-	ThreadNetworkManager *thread = static_cast<ThreadNetworkManager*>(threadPtr);
 
-	std::cout << "Inserting threaded" << std::endl;
-	thread->add_connection(c);
+    void TCPConnectionManager::threaded_start(TCPConnection_ptr c) {
+        ThreadBase *threadPtr = thread_manager.network_manager().get();
+        ThreadNetworkManager *thread = static_cast<ThreadNetworkManager*>(threadPtr);
+
+        thread->add_connection(c);
     }
 
     void TCPConnectionManager::start(TCPConnection_ptr c) {
-	std::cout << "Inserting" << std::endl;
         connections_.insert(c);
-	std::cout << "Starting" << std::endl;
         c->start();
     }
 
@@ -35,4 +29,7 @@ namespace mudbase {
                       boost::bind(&TCPConnection::stop, _1));
         connections_.clear();
     }
+
 } // namespace mudbase
+
+// vim:ts=4:sw=4:ai:et:si:sts=4

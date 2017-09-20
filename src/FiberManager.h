@@ -1,7 +1,3 @@
-//
-// Created by Gavin on 8/30/2017.
-//
-
 #ifndef MUDBASE_FIBERMANAGER_H
 #define MUDBASE_FIBERMANAGER_H
 
@@ -48,3 +44,5 @@ namespace mudbase {
 } // namespace mudbase
 
 #endif //MUDBASE_FIBERMANAGER_H
+
+// vim:ts=4:sw=4:ai:et:si:sts=4

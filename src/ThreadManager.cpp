@@ -1,7 +1,3 @@
-//
-// Created by Gavin on 8/30/2017.
-//
-
 #include "ThreadBase.h"
 #include "ThreadManager.h"
 #include "Scheduler.h"
@@ -26,9 +22,9 @@ namespace mudbase {
             case THREAD_PLAYER:
                 mortal_thread_ = thread->id();
                 break;
-	    case THREAD_NETWORK_MANAGER:
-		network_manager_ = thread;
-		break;
+            case THREAD_NETWORK_MANAGER:
+                network_manager_ = thread;
+                break;
             default:
                 break;
         }
@@ -40,7 +36,7 @@ namespace mudbase {
 
     void ThreadManager::deregister_thread(ThreadBase_ptr thread) {
         threads_.erase(thread);
-	remove_scheduler(thread->id());
+        remove_scheduler(thread->id());
 
         lock_t lk(mtx_count_);
         if (0 == --thread_count_) {
@@ -50,10 +46,10 @@ namespace mudbase {
     }
 
     void ThreadManager::stop_thread(ThreadBase_ptr t) {
-	if (t == nullptr) {
+        if (t == nullptr) {
             return;
-	}
-	t->stop(true);
+        }
+        t->stop(true);
     }
 
     void ThreadManager::shutdown() {
@@ -68,7 +64,7 @@ namespace mudbase {
 
     void ThreadManager::wait() {
         lock_t lk(mtx_count_);
-	std::size_t *pCount = &thread_count_;
+        std::size_t *pCount = &thread_count_;
         cnd_count_.wait(lk, [pCount]() { return 0 == *pCount; });
         BOOST_ASSERT(0 == thread_count_);
     }
@@ -92,13 +88,13 @@ namespace mudbase {
     }
 
     ThreadBase_ptr ThreadManager::network_manager() {
-	return network_manager_;
+        return network_manager_;
     }
 
     void ThreadManager::remove_scheduler(std::thread::id thread) {
         auto search = schedulerMap_.find(thread);
         if (search != schedulerMap_.end()) {
-	    schedulerMap_.erase(search);
+            schedulerMap_.erase(search);
         }
     }
 
@@ -107,13 +103,15 @@ namespace mudbase {
         if (search == schedulerMap_.end()) {
             return nullptr;
         }
-	return search->second;
+        return search->second;
     }
 
-    void ThreadManager::add_scheduler(std::thread::id thread, ThreadedScheduler *sched) {
-	std::cout << "Scheduler for thread " << thread << " Scheduler: " << sched << std::endl;
-	std::pair<std::thread::id, ThreadedScheduler *> item(thread, sched);
-	schedulerMap_.insert(item);
+    void ThreadManager::add_scheduler(std::thread::id thread,
+                                      ThreadedScheduler *sched) {
+        std::pair<std::thread::id, ThreadedScheduler *> item(thread, sched);
+        schedulerMap_.insert(item);
     }
 
 } // namespace mudbase
+
+// vim:ts=4:sw=4:ai:et:si:sts=4

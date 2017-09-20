@@ -1,7 +1,3 @@
-//
-// Created by Gavin on 8/29/2017.
-//
-
 #ifndef MUDBASE_TCPCONNECTION_H
 #define MUDBASE_TCPCONNECTION_H
 
@@ -27,7 +23,8 @@ namespace mudbase {
               private boost::noncopyable {
     public:
         /// Construct a connection with the given io_service
-        explicit TCPConnection(boost::asio::io_service &io_service, TCPConnectionManager &manager);
+        explicit TCPConnection(boost::asio::io_service &io_service,
+                               TCPConnectionManager &manager);
 
         /// Get the socket associated with the connection
         boost::asio::ip::tcp::socket &socket();
@@ -94,3 +91,5 @@ namespace mudbase {
 } // namespace mudbase
 
 #endif //MUDBASE_TCPCONNECTION_H
+
+// vim:ts=4:sw=4:ai:et:si:sts=4

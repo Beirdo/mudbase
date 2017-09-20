@@ -1,10 +1,5 @@
-//
-// Created by Gavin on 8/29/2017.
-//
-
 #ifndef MUDBASE_TCPCONNECTIONHANDLER_H
 #define MUDBASE_TCPCONNECTIONHANDLER_H
-
 
 #include <set>
 #include <boost/noncopyable.hpp>
@@ -17,7 +12,7 @@ namespace mudbase {
     public:
         /// Add the specified connection to the manager thread
         void threaded_start(TCPConnection_ptr c);
-	
+        
         /// Add the specified connection to the manager and start it
         void start(TCPConnection_ptr c);
 
@@ -30,10 +25,11 @@ namespace mudbase {
     private:
         /// The managed connections
         std::set<TCPConnection_ptr> connections_;
-
     };
 
 } // namespace mudbase
 
 
 #endif //MUDBASE_TCPCONNECTIONHANDLER_H
+
+// vim:ts=4:sw=4:ai:et:si:sts=4

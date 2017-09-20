@@ -1,7 +1,3 @@
-//
-// Created by Gavin on 8/30/2017.
-//
-
 #ifndef MUDBASE_THREADMANAGER_H
 #define MUDBASE_THREADMANAGER_H
 
@@ -41,27 +37,29 @@ namespace mudbase {
         std::thread::id &immortal_thread();
 
         ThreadBase_ptr network_manager();
-	ThreadedScheduler *find_scheduler(std::thread::id thread);
-	void add_scheduler(std::thread::id thread, ThreadedScheduler *sched);
-	void remove_scheduler(std::thread::id thread);
+        ThreadedScheduler *find_scheduler(std::thread::id thread);
+        void add_scheduler(std::thread::id thread, ThreadedScheduler *sched);
+        void remove_scheduler(std::thread::id thread);
 
     private:
-	void stop_thread(ThreadBase_ptr t);
+        void stop_thread(ThreadBase_ptr t);
 
         std::size_t thread_count_;
         std::mutex mtx_count_;
         boost::fibers::condition_variable_any cnd_count_;
 
-	std::map<std::thread::id, ThreadedScheduler *> schedulerMap_;
+        std::map<std::thread::id, ThreadedScheduler *> schedulerMap_;
         std::set<ThreadBase_ptr> threads_;
 
         std::thread::id login_thread_;
         std::thread::id mortal_thread_;
         std::thread::id immortal_thread_;
 
-	ThreadBase_ptr network_manager_;
+        ThreadBase_ptr network_manager_;
     };
 
 } // namespace mudbase
 
 #endif //MUDBASE_THREADMANAGER_H
+
+// vim:ts=4:sw=4:ai:et:si:sts=4

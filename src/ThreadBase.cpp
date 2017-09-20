@@ -1,7 +1,3 @@
-//
-// Created by Gavin on 8/30/2017.
-//
-
 #include <thread>
 #include <string>
 #include <boost/fiber/fiber.hpp>
@@ -26,15 +22,17 @@ namespace mudbase {
 
         thread_manager.register_thread(shared_from_this(), type_);
         thread_manager.init_thread(barrier_);
-        std::cout << "thread started " << std::this_thread::get_id() << " type " << type_ << std::endl;
+        std::cout << "thread started " << std::this_thread::get_id()
+                  << " type " << type_ << std::endl;
 
-	idle_fiber_.reset(new FiberIdle());
+        idle_fiber_.reset(new FiberIdle());
         fiber_manager.register_fiber(idle_fiber_);
-	idle_fiber_->set_target_thread(id());
+        idle_fiber_->set_target_thread(id());
 
-	thread_func();
-	wait();
-        std::cout << "thread ending " << std::this_thread::get_id() << " type " << type_ << std::endl;
+        thread_func();
+        wait();
+        std::cout << "thread ending " << std::this_thread::get_id()
+                  << " type " << type_ << std::endl;
     }
 
     void ThreadBase::start() {
@@ -44,39 +42,38 @@ namespace mudbase {
 
     void ThreadBase::stop(bool do_join) {
         if (!abort_) {
-	    lock_t lk(mtx_abort_);
+            lock_t lk(mtx_abort_);
             abort_ = true;
-	    lk.unlock();
-	    cnd_abort_.notify_all();
-	    std::cout << "Stop done " << id() << std::endl;
+            lk.unlock();
+            cnd_abort_.notify_all();
         }
 
-	if (abort_ && do_join) {
-	    std::cout << "About to deregister" << std::endl;
+        if (abort_ && do_join) {
             thread_manager.deregister_thread(shared_from_this());
-	    std::cout << "Deregistered" << std::endl;
-	    if (thread_.joinable()) {
-		std::cout << "Joining " << id() << " from " << std::this_thread::get_id() << std::endl;
-		wait();
-		thread_.interrupt();
+            if (thread_.joinable()) {
+                std::cout << "Joining " << id() << " from "
+                          << std::this_thread::get_id() << std::endl;
+                wait();
+                thread_.interrupt();
                 thread_.try_join_for(boost::chrono::milliseconds(100));
-	    }
-	}
+            }
+        }
     }
 
     bool ThreadBase::running() {
-	return thread_.joinable();
+        return thread_.joinable();
     }
 
     void ThreadBase::wait() {
-	lock_t lk(mtx_abort_);
-	bool *pAbort = &abort_;
-	cnd_abort_.wait(lk, [pAbort]() { return *pAbort; });
-	std::cout << "Wait finished" << std::endl;
+        lock_t lk(mtx_abort_);
+        bool *pAbort = &abort_;
+        cnd_abort_.wait(lk, [pAbort]() { return *pAbort; });
     }
 
     std::thread::id ThreadBase::id() {
-	return static_cast<std::thread::id>(thread_.native_handle());
+        return static_cast<std::thread::id>(thread_.native_handle());
     }
 
 } // namespace mudbase
+
+// vim:ts=4:sw=4:ai:et:si:sts=4

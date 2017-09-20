@@ -1,7 +1,3 @@
-//
-// Created by Gavin on 8/30/2017.
-//
-
 #ifndef MUDBASE_TCPSERVER_H
 #define MUDBASE_TCPSERVER_H
 
@@ -31,7 +27,8 @@ namespace mudbase {
         void start_accept();
 
         /// Handle completion of an asynchronous accept operation.
-        void handle_accept(TCPConnection_ptr connection, const boost::system::error_code &e);
+        void handle_accept(TCPConnection_ptr connection,
+                           const boost::system::error_code &e);
 
         /// Handle a request to stop the server.
         void handle_stop();
@@ -39,7 +36,8 @@ namespace mudbase {
         /// The io_service used to perform asynchronous operations.
         boost::asio::io_service io_service_;
 
-        /// The signal_set is used to register for process termination notifications.
+        /// The signal_set is used to register for process termination
+        /// notifications.
         boost::asio::signal_set signals_;
 
         /// Acceptor used to listen for incoming connections.
@@ -51,3 +49,5 @@ namespace mudbase {
 } // namespace mudbase
 
 #endif //MUDBASE_TCPSERVER_H
+
+// vim:ts=4:sw=4:ai:et:si:sts=4

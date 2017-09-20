@@ -1,7 +1,3 @@
-//
-// Created by Gavin on 8/30/2017.
-//
-
 #ifndef MUDBASE_BARRIER_H
 #define MUDBASE_BARRIER_H
 
@@ -20,29 +16,30 @@ private:
     std::condition_variable cond_{};
 
 public:
-    explicit barrier( std::size_t initial) :
-            initial_{ initial },
-            current_{ initial_ } {
-        BOOST_ASSERT ( 0 != initial);
+    explicit barrier(std::size_t initial)
+            : initial_{ initial }, current_{ initial_ } {
+        BOOST_ASSERT (0 != initial);
     }
 
-    barrier( barrier const&) = delete;
-    barrier & operator=( barrier const&) = delete;
+    barrier(barrier const&) = delete;
+    barrier & operator= (barrier const&) = delete;
 
     bool wait() {
-        std::unique_lock< std::mutex > lk( mtx_);
+        std::unique_lock<std::mutex> lk(mtx_);
         const bool cycle = cycle_;
-        if ( 0 == --current_) {
-            cycle_ = ! cycle_;
+        if (0 == --current_) {
+            cycle_ = !cycle_;
             current_ = initial_;
             lk.unlock(); // no pessimization
             cond_.notify_all();
             return true;
-        } else {
-            cond_.wait( lk, [&](){ return cycle != cycle_; });
         }
+        
+        cond_.wait(lk, [&](){ return cycle != cycle_; });
         return false;
     }
 };
 
 #endif //MUDBASE_BARRIER_H
+
+// vim:ts=4:sw=4:ai:et:si:sts=4

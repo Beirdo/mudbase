@@ -1,7 +1,3 @@
-//
-// Created by Gavin on 9/4/2017.
-//
-
 #ifndef MUDBASE_FIBERPLAYING_H
 #define MUDBASE_FIBERPLAYING_H
 
@@ -22,3 +18,5 @@ namespace mudbase {
 }
 
 #endif //MUDBASE_FIBERPLAYING_H
+
+// vim:ts=4:sw=4:ai:et:si:sts=4

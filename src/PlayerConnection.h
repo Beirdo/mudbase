@@ -1,7 +1,3 @@
-//
-// Created by Gavin on 8/30/2017.
-//
-
 #ifndef MUDBASE_PLAYERCONNECTION_H
 #define MUDBASE_PLAYERCONNECTION_H
 
@@ -20,20 +16,20 @@ namespace mudbase {
     public:
         explicit PlayerConnection(TCPConnection_ptr connection);
 
-	void start();
+        void start();
         TCPConnection_ptr connection();
         bool hasInput();
         std::string &readLine();
         void writeLine(const char *line, bool noCR = false);
         void writeLine(std::string line, bool noCR = false);
         void close();
-	bool isImmortal();
-	std::string &uuid();
+        bool isImmortal();
+        std::string &uuid();
 
     private:
         TCPConnection_ptr connection_;
         std::string uuid_;
-	FiberBase_ptr fiber_;
+        FiberBase_ptr fiber_;
     };
 
     typedef boost::shared_ptr<PlayerConnection> PlayerConnection_ptr;
@@ -41,3 +37,5 @@ namespace mudbase {
 } // namespace mudbase
 
 #endif //MUDBASE_PLAYERCONNECTION_H
+
+// vim:ts=4:sw=4:ai:et:si:sts=4
