@@ -40,6 +40,15 @@ namespace mudbase {
     mudbase::PlayerConnection_ptr conn = \
         mudbase::lookupConnection(event.get_attribute(connection_uuid))
 
+#define ACTION_FUNCTOR(name, block) \
+BOOST_MSM_EUML_ACTION(name) { \
+    template<class Event, class FSM, class STATE> \
+    void operator()(Event const &event, FSM &, STATE &) { \
+        LOOKUP_CONNECTION(conn, event); \
+        block \
+    } \
+};
+
 // events
 BOOST_MSM_EUML_DECLARE_ATTRIBUTE(std::string, input_line)
 BOOST_MSM_EUML_DECLARE_ATTRIBUTE(std::string, connection_uuid)
@@ -49,13 +58,12 @@ BOOST_MSM_EUML_EVENT_WITH_ATTRIBUTES(input, line_attributes)
 
 
 // Entry Functors
-BOOST_MSM_EUML_ACTION(Enter_Disconnect) {
-    template<class Event, class FSM, class STATE>
-    void operator()(Event const &event, FSM &, STATE &) {
-        LOOKUP_CONNECTION(conn, event);
-        conn->writeLine("Goodbye.");
-    }
-};
+
+ACTION_FUNCTOR(Enter_Disconnect, 
+        {
+            conn->writeLine("Goodbye.");
+        }
+)
 
 BOOST_MSM_EUML_ACTION(Enter_Playing) {
     template<class Event, class FSM, class STATE>
@@ -920,6 +928,7 @@ BOOST_MSM_EUML_DECLARE_STATE_MACHINE((transition_table,
 typedef msm::back::state_machine <login_> login;
 
 std::string state_name(login const &p) {
+    std::cout << "State " << p.current_state()[0] << std::endl;
     return std::string(state_names[p.current_state()[0]]);
 }
 
@@ -930,7 +939,9 @@ namespace mudbase {
               fsm_(new ::login) {
         mudbase::connectionMap.insert(ConnectionPair(uuid_, connection_));
         ::login *pFsm = (login *)fsm_;
+        std::cout << "Before start: " << ::state_name(*pFsm) << std::endl;
         pFsm->start();
+        std::cout << "After start: " << ::state_name(*pFsm) << std::endl;
     }
 
     LoginSMInternal::~LoginSMInternal() {
@@ -942,6 +953,7 @@ namespace mudbase {
     std::string LoginSMInternal::do_state_step() {
         std::string &line = connection_->readLine();
         ::login *pFsm = (login *)fsm_;
+        std::cout << "Before state: " << ::state_name(*pFsm) << std::endl;
         pFsm->process_event(input(line, uuid_));
 
         // Return new state name

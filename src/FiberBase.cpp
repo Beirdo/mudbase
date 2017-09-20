@@ -55,7 +55,6 @@ namespace mudbase {
     }
 
     void FiberBase::set_target_thread(std::thread::id t) {
-        std::cout << "Setting target thread to " << t << std::endl;
         target_thread_ = t;
     }
 
