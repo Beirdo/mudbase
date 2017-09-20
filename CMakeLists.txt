@@ -10,6 +10,9 @@ set(PROJECT_SOURCE_DIR src)
 set(CMAKE_CXX_VERSION 11)
 #set(CMAKE_BUILD_TYPE Debug)
 set(CMAKE_BUILD_TYPE Release)
+
+set(SML_INCLUDE_DIR sml/include)
+
 include(${PROJECT_SOURCE_DIR}/CMakeLists.txt)
 
 # configure a header file to pass some of the CMake settings
@@ -21,7 +24,8 @@ configure_file (
 
 # add the binary tree to the search path for include files
 # so that we will find Config.h
-include_directories("${PROJECT_BINARY_DIR}" "${PROJECT_SOURCE_DIR}")
+include_directories("${PROJECT_BINARY_DIR}" "${PROJECT_SOURCE_DIR}"
+                    "${SML_INCLUDE_DIR}")
 
 add_executable(Mudbase ${Mudbase_SOURCES})
 target_link_libraries(Mudbase Boost::system)

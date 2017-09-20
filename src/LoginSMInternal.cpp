@@ -7,6 +7,7 @@
 #include <boost/msm/back/state_machine.hpp>
 #include <boost/msm/front/euml/euml.hpp>
 #include <boost/shared_ptr.hpp>
+#include <boost/sml.hpp>
 
 #include "PlayerConnection.h"
 #include "LoginSMInternal.h"
