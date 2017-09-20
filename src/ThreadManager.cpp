@@ -40,6 +40,7 @@ namespace mudbase {
 
     void ThreadManager::deregister_thread(ThreadBase_ptr thread) {
         threads_.erase(thread);
+	remove_scheduler(thread->id());
 
         lock_t lk(mtx_count_);
         if (0 == --thread_count_) {
@@ -48,9 +49,16 @@ namespace mudbase {
         }
     }
 
+    void ThreadManager::stop_thread(ThreadBase_ptr t) {
+	if (t == nullptr) {
+            return;
+	}
+	t->stop(true);
+    }
+
     void ThreadManager::shutdown() {
         std::for_each(threads_.begin(), threads_.end(),
-                      boost::bind(&ThreadBase::stop, _1, true));
+                      boost::bind(&ThreadManager::stop_thread, this, _1));
         threads_.clear();
         lock_t lk(mtx_count_);
         thread_count_ = 0;
@@ -85,6 +93,13 @@ namespace mudbase {
 
     ThreadBase_ptr ThreadManager::network_manager() {
 	return network_manager_;
+    }
+
+    void ThreadManager::remove_scheduler(std::thread::id thread) {
+        auto search = schedulerMap_.find(thread);
+        if (search != schedulerMap_.end()) {
+	    schedulerMap_.erase(search);
+        }
     }
 
     ThreadedScheduler *ThreadManager::find_scheduler(std::thread::id thread) {

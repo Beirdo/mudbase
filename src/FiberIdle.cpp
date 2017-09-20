@@ -10,7 +10,7 @@
 namespace mudbase {
 
     FiberIdle::FiberIdle()
-            : FiberBase() {
+            : FiberBase(true) {
     }
 
     bool FiberIdle::fiber_func() {

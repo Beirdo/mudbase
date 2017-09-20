@@ -7,6 +7,8 @@
 #include <boost/fiber/fiber.hpp>
 #include <boost/fiber/all.hpp>
 #include <boost/bind.hpp>
+#include <boost/thread.hpp>
+#include <boost/chrono.hpp>
 #include "ThreadBase.h"
 #include "ThreadManager.h"
 #include "FiberIdle.h"
@@ -31,13 +33,13 @@ namespace mudbase {
 	idle_fiber_->set_target_thread(id());
 
 	thread_func();
-
-	stop(false);
+	wait();
+        std::cout << "thread ending " << std::this_thread::get_id() << " type " << type_ << std::endl;
     }
 
     void ThreadBase::start() {
         abort_ = false;
-        thread_ = std::thread(boost::bind(&ThreadBase::run, shared_from_this()));
+        thread_ = boost::thread(boost::bind(&ThreadBase::run, shared_from_this()));
     }
 
     void ThreadBase::stop(bool do_join) {
@@ -46,7 +48,7 @@ namespace mudbase {
             abort_ = true;
 	    lk.unlock();
 	    cnd_abort_.notify_all();
-	    std::cout << "Stop done" << std::endl;
+	    std::cout << "Stop done " << id() << std::endl;
         }
 
 	if (abort_ && do_join) {
@@ -55,7 +57,9 @@ namespace mudbase {
 	    std::cout << "Deregistered" << std::endl;
 	    if (thread_.joinable()) {
 		std::cout << "Joining " << id() << " from " << std::this_thread::get_id() << std::endl;
-                thread_.join();
+		wait();
+		thread_.interrupt();
+                thread_.try_join_for(boost::chrono::milliseconds(100));
 	    }
 	}
     }
@@ -72,7 +76,7 @@ namespace mudbase {
     }
 
     std::thread::id ThreadBase::id() {
-	return thread_.get_id();
+	return static_cast<std::thread::id>(thread_.native_handle());
     }
 
 } // namespace mudbase

@@ -19,6 +19,7 @@ namespace mudbase {
 	server_->run();
 	thread_.detach();
 	std::cout << "ThreadNetwork done" << std::endl;
+	stop(false);
     }
 
 }

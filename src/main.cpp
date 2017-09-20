@@ -9,6 +9,7 @@
 #include <iostream>
 #include <mutex>
 #include <thread>
+#include <exception>
 #include <stdlib.h>
 #include <boost/fiber/all.hpp>
 #include "barrier.h"
@@ -28,16 +29,23 @@ namespace mudbase {
     FiberManager fiber_manager;
     ThreadManager thread_manager;
     TCPConnectionManager connection_manager;
+    std::thread::id main_thread;
+
+    void term_handler() {
+	    std::_Exit(0);
+    };
 
     int main(int argc, char *argv[]) {
         std::cout << "main thread started " << std::this_thread::get_id() << std::endl;
 
-	std::thread::id mainThread = std::this_thread::get_id();
+	std::set_terminate(&term_handler);
+
+	main_thread = std::this_thread::get_id();
 	boost::fibers::use_scheduling_algorithm<ThreadedScheduler>();
 
 	FiberBase_ptr idle_fiber(new FiberIdle());
         fiber_manager.register_fiber(idle_fiber);
-	idle_fiber->set_target_thread(mainThread);
+	idle_fiber->set_target_thread(main_thread);
 
         barrier b(6);
         ThreadBase_ptr user_thread(new ThreadPlayer(&b, THREAD_PLAYER));
@@ -60,8 +68,9 @@ namespace mudbase {
 
 	network_thread->wait();
 
-        fiber_manager.shutdown();
-        thread_manager.shutdown();
+        //fiber_manager.shutdown();
+        //thread_manager.shutdown();
+	std::terminate();
 
         std::cout << "done." << std::endl;
         return EXIT_SUCCESS;

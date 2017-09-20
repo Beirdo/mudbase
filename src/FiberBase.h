@@ -24,7 +24,7 @@ namespace mudbase {
             : public boost::enable_shared_from_this<FiberBase>,
               private boost::noncopyable {
     public:
-        FiberBase();
+        FiberBase(bool idle = false);
 
         void start();
 
@@ -36,6 +36,7 @@ namespace mudbase {
 
 	void set_target_thread(std::thread::id thread);
 	std::thread::id target_thread();
+	bool is_idle();
 
     protected:
         virtual bool fiber_func() = 0;
@@ -45,6 +46,7 @@ namespace mudbase {
         bool abort_;
 	std::thread::id target_thread_; 
 	Fiber fiber_;
+	bool idle_;
     };
 
     typedef boost::shared_ptr<FiberBase> FiberBase_ptr;

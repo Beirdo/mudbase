@@ -10,6 +10,7 @@
 #include <boost/noncopyable.hpp>
 #include <boost/shared_ptr.hpp>
 #include <boost/enable_shared_from_this.hpp>
+#include <boost/thread.hpp>
 #include <condition_variable>
 #include <mutex>
 #include "barrier.h"
@@ -58,7 +59,7 @@ namespace mudbase {
         std::mutex mtx_abort_;
         boost::fibers::condition_variable_any cnd_abort_;
 
-        std::thread thread_;
+        boost::thread thread_;
         barrier *barrier_;
         ThreadType type_;
 	FiberBase_ptr idle_fiber_;

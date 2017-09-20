@@ -59,20 +59,20 @@ namespace mudbase {
 		              ThreadedProps & props) noexcept {
 	    std::thread::id ctx_thread = props.get_thread();
 
-	    if (ctx_thread == this_thread_) {
+	    if (ctx_thread == this_thread_ ||
+		ctx->is_context(boost::fibers::type::pinned_context)) {
                 rqueue_.push_back(*ctx);
-	    } else {
-		ThreadedScheduler *sched = thread_manager.find_scheduler(ctx_thread);
-		/// std::cout << "Scheduler found: " << sched << " Thread " << ctx_thread << std::endl;
-		if (sched == nullptr || ctx->is_context(boost::fibers::type::pinned_context)) {
-		    // If the destination is invalid, keep it here
-		    rqueue_.push_back(*ctx);
-		} else {
-	            // Send it to the correct scheduler
-		    ctx->detach();
-		    sched->awakened(ctx, props);
-		}
-            }
+		return;
+	    }
+
+	    ThreadedScheduler *sched = thread_manager.find_scheduler(ctx_thread);
+	    if (sched == nullptr) {
+		sched = thread_manager.find_scheduler(main_thread);
+	    }
+	   
+	    // Send it to the correct scheduler
+	    ctx->detach();
+	    sched->awakened(ctx, props);
         }
 
         virtual boost::fibers::context *pick_next() noexcept {

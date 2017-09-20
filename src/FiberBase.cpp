@@ -11,8 +11,8 @@
 
 namespace mudbase {
 
-    FiberBase::FiberBase()
-            : abort_(false), fiber_() {
+    FiberBase::FiberBase(bool idle)
+            : abort_(false), fiber_(), idle_(idle) {
 	start();
     }
 
@@ -43,7 +43,7 @@ namespace mudbase {
 
     void FiberBase::stop() {
         abort_ = true;
-	if (fiber_.joinable()) {
+	if (!idle_ && fiber_.joinable()) {
 	    fiber_.join();
 	}
     }
@@ -64,6 +64,10 @@ namespace mudbase {
     void FiberBase::move_to_thread(std::thread::id thread) {
 	ThreadedProps &props = boost::this_fiber::properties<ThreadedProps>();
 	props.set_thread(thread);
+    }
+
+    bool FiberBase::is_idle() {
+	return idle_;
     }
 
 } // namespace mudbase

@@ -43,8 +43,11 @@ namespace mudbase {
         ThreadBase_ptr network_manager();
 	ThreadedScheduler *find_scheduler(std::thread::id thread);
 	void add_scheduler(std::thread::id thread, ThreadedScheduler *sched);
+	void remove_scheduler(std::thread::id thread);
 
     private:
+	void stop_thread(ThreadBase_ptr t);
+
         std::size_t thread_count_;
         std::mutex mtx_count_;
         boost::fibers::condition_variable_any cnd_count_;
