@@ -16,6 +16,7 @@ namespace mudbase {
 
         PlayerConnection_ptr connection_;
         LoginSM_ptr fsm_;
+        bool initialized_;
     };
 }
 

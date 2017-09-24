@@ -13,8 +13,10 @@
 using namespace std;
 namespace sml = boost::sml;
 
+struct e0 { };
 struct e1 { };
 
+auto startup = sml::event<e0>;
 auto input = sml::event<e1>;
 
 struct dep {
@@ -94,6 +96,10 @@ struct table {
         auto name_banned = [](dep& e) { return false; };
 
         // Actions
+        auto initialize = [](dep& e) {
+            writeToChar(e.parent, "Banner goes here");
+        };
+
         auto save_new_email = [](dep& e) { };
         auto save_email = [](dep& e) { };
         auto save_password = [](dep& e) { };
@@ -161,15 +167,9 @@ struct table {
         auto enter_show_login_menu = [](dep& e) { };
         auto enter_edit_extra_descr = [](dep& e) { };
 
-        // exit functions
-        auto initialize = [](dep& e) {
-            writeToChar(e.parent, "Banner goes here");
-        };
-
         // clang-format off
         return make_transition_table(
-            *"Initial"_s = "Get_Email"_s,
-            "Initial"_s + sml::on_exit<_> / initialize,
+            *"Initial"_s + startup / initialize = "Get_Email"_s,
 
             "Disconnect"_s = X,
             "Disconnect"_s + sml::on_entry<_> / enter_disconnect,
@@ -304,6 +304,7 @@ namespace mudbase {
         LoginSMInternal(PlayerConnection_ptr connection);
         const char *state_name();
 
+        void start();
         std::string do_state_step();
         std::string &line();
         char first_char();
@@ -342,6 +343,10 @@ namespace mudbase {
         return internal_->do_state_step();
     }
 
+    void startStateMachine(LoginSMInternal_ptr internal_) {
+        internal_->start();
+    }
+
     LoginSMInternal::LoginSMInternal(PlayerConnection_ptr connection)
             : connection_(connection), dep_{this}, fsm_(sml::sm<table>{dep_}) {
         std::cout << "At start: " << state_name() << std::endl;
@@ -351,6 +356,10 @@ namespace mudbase {
         const char *name;
         fsm_.visit_current_states([&](auto state) { name = state.c_str(); });
         return name;
+    }
+
+    void LoginSMInternal::start() {
+        fsm_.process_event(e0{});
     }
 
     std::string LoginSMInternal::do_state_step() {

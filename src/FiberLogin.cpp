@@ -9,7 +9,7 @@
 namespace mudbase {
 
     FiberLogin::FiberLogin(PlayerConnection_ptr conn)
-            : connection_(conn), fsm_(new LoginSM(conn)) {
+            : connection_(conn), fsm_(new LoginSM(conn)), initialized_(false) {
     }
 
     bool FiberLogin::fiber_func() {
@@ -28,6 +28,11 @@ namespace mudbase {
         //      -- Playing        delete fiber (after creating player fiber,
         //                           putting it into appropriate thread)
         //      -- all others     yield fiber (handle another line of input)
+
+        if (!initialized_) {
+            initialized_ = true;
+            fsm_->start();
+        }
 
         if (!connection_->hasInput()) {
             return true;

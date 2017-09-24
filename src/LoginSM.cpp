@@ -9,6 +9,10 @@ namespace mudbase {
 
     }
 
+    void LoginSM::start() {
+        startStateMachine(internal_);
+    }
+
     std::string LoginSM::do_state_step() {
         return doStateStep(internal_);
     }

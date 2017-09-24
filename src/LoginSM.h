@@ -12,6 +12,7 @@ namespace mudbase {
     public:
         LoginSM(PlayerConnection_ptr connection);
         std::string do_state_step();
+        void start();
 
     private:
         LoginSMInternal_ptr internal_;

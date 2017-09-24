@@ -13,6 +13,7 @@ namespace mudbase {
 
     LoginSMInternal_ptr createLoginSMInternal(PlayerConnection_ptr connection);
     std::string doStateStep(LoginSMInternal_ptr internal_);
+    void startStateMachine(LoginSMInternal_ptr internal_);
 
 }
 
