@@ -128,7 +128,9 @@ struct table {
             writeToChar(e.parent, "Goodbye.");
         };
         auto enter_playing = [](dep& e) { };
-        auto enter_get_email = [](dep& e) { };
+        auto enter_get_email = [](dep& e) {
+            writeToChar(e.parent, "Please enter your email: ", true);
+        };
         auto enter_confirm_email = [](dep& e) { };
         auto enter_resend_confirm_email = [](dep& e) { };
         auto enter_get_new_user_password = [](dep& e) { };
@@ -160,7 +162,9 @@ struct table {
         auto enter_edit_extra_descr = [](dep& e) { };
 
         // exit functions
-        auto initialize = [](dep& e) { };
+        auto initialize = [](dep& e) {
+            writeToChar(e.parent, "Banner goes here");
+        };
 
         // clang-format off
         return make_transition_table(
