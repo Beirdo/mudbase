@@ -15,13 +15,18 @@ namespace mudbase {
     public:
         LoginSMInternal(PlayerConnection_ptr connection);
         ~LoginSMInternal();
+        const char *state_name();
 
         std::string do_state_step();
+        std::string &line();
+        char first_char();
+        void write(std::string line, bool noCR = false);
 
     private:
         void *fsm_;
         PlayerConnection_ptr connection_;
-        std::string &uuid_;
+        std::string line_;
+        char ch_;
     };
 
     typedef boost::shared_ptr<LoginSMInternal> LoginSMInternal_ptr;

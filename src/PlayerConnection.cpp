@@ -8,6 +8,7 @@
 #include "PlayerConnection.h"
 #include "FiberLogin.h"
 #include "main.h"
+#include "util.h"
 
 namespace mudbase {
     PlayerConnection::PlayerConnection(TCPConnection_ptr connection)
@@ -37,6 +38,7 @@ namespace mudbase {
         inQ.pop_front();
 
         std::cout << "Dequeued '" << line << "'" << std::endl;
+        trim(line);
         return line;
     }
 
