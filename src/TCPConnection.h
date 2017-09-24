@@ -23,8 +23,7 @@ namespace mudbase {
               private boost::noncopyable {
     public:
         /// Construct a connection with the given io_service
-        explicit TCPConnection(boost::asio::io_service &io_service,
-                               TCPConnectionManager &manager);
+        explicit TCPConnection(boost::asio::io_service &io_service);
 
         /// Get the socket associated with the connection
         boost::asio::ip::tcp::socket &socket();
@@ -43,6 +42,9 @@ namespace mudbase {
 
         /// Force the close of the socket
         void close();
+
+        /// Close the socket after flushing output
+        void soft_close();
 
         /// Read data from the connection
         void read();
@@ -67,9 +69,6 @@ namespace mudbase {
         /// Socket for the connection
         boost::asio::ip::tcp::socket socket_;
 
-        /// The manager for this connection
-        TCPConnectionManager &connection_manager_;
-
         /// Buffer for incoming data
         boost::array<char, 8192> buffer_;
 
@@ -84,6 +83,8 @@ namespace mudbase {
 
         /// Player
         PlayerConnection_ptr player_;
+
+        bool closing_;
     };
 
     typedef boost::shared_ptr<TCPConnection> TCPConnection_ptr;

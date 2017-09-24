@@ -40,7 +40,7 @@ namespace mudbase {
 
         std::string state = fsm_->do_state_step();
         std::cout << "New Login state: " << state << std::endl;
-        if (state == "Disconnect") {
+        if (state == "terminate") {
             connection_->close();
             return false;
         }

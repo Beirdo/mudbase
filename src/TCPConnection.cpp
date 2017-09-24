@@ -5,12 +5,11 @@
 #include "TCPConnection.h"
 #include "TCPConnectionManager.h"
 #include "PlayerConnection.h"
+#include "main.h"
 
 namespace mudbase {
-    TCPConnection::TCPConnection(boost::asio::io_service &io_service,
-                                 TCPConnectionManager &manager)
-            : socket_(io_service),
-              connection_manager_(manager) {
+    TCPConnection::TCPConnection(boost::asio::io_service &io_service)
+            : socket_(io_service), closing_(false) {
         partial_string_.clear();
     }
 
@@ -82,29 +81,41 @@ namespace mudbase {
 
             // Start reading again
             read();
-        } else if (e != boost::asio::error::operation_aborted) {
-            connection_manager_.stop(shared_from_this());
+        } else if (e != boost::asio::error::operation_aborted || closing_) {
+            connection_manager.stop(shared_from_this());
         }
     }
 
     void TCPConnection::close() {
         // Initiate graceful connection closure.
+        closing_ = true;
         boost::system::error_code ignored_ec;
         socket_.shutdown(boost::asio::ip::tcp::socket::shutdown_both,
                          ignored_ec);
     }
 
+    void TCPConnection::soft_close() {
+        closing_ = true;
+        if (output_queue_.empty()) {
+            connection_manager.stop(shared_from_this());
+        }
+    }
+
     void TCPConnection::write(std::string &line) {
-        bool do_kick = output_queue_.empty();
+        bool was_empty = output_queue_.empty();
 
         output_queue_.push_back(line);
 
-        if (do_kick) {
+        if (was_empty) {
             kick();
         }
     }
 
     void TCPConnection::kick() {
+        if (output_queue_.empty()) {
+            return;
+        }
+
         const char *line = output_queue_.front().c_str();
         socket_.async_send(boost::asio::buffer(line, strlen(line)),
                            boost::bind(&TCPConnection::handle_write, shared_from_this(),
@@ -114,11 +125,16 @@ namespace mudbase {
     void TCPConnection::handle_write(const boost::system::error_code &e) {
         if (!e) {
             output_queue_.pop_front();
-            kick();
+            if (output_queue_.empty() && closing_) {
+                connection_manager.stop(shared_from_this());
+            } else {
+                kick();
+            }
+            return;
         }
 
-        if (e != boost::asio::error::operation_aborted) {
-            connection_manager_.stop(shared_from_this());
+        if (e != boost::asio::error::operation_aborted || closing_) {
+            connection_manager.stop(shared_from_this());
         }
     }
 } // namespace mudbase

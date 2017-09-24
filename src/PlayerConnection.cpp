@@ -55,8 +55,8 @@ namespace mudbase {
     }
 
     void PlayerConnection::close() {
-        // TODO: flush all output?
-        connection_->close();
+        std::cout << "PlayerConnection ending " << uuid_ << std::endl;
+        connection_->soft_close();
     }
 
     bool PlayerConnection::isImmortal() {

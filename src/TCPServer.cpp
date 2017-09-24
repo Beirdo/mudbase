@@ -44,7 +44,7 @@ namespace mudbase {
     }
 
     void TCPServer::start_accept() {
-        TCPConnection_ptr new_connection_(new TCPConnection(io_service_, connection_manager));
+        TCPConnection_ptr new_connection_(new TCPConnection(io_service_));
 
         acceptor_.async_accept(new_connection_->socket(),
                                boost::bind(&TCPServer::handle_accept, this,
