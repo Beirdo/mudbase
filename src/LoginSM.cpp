@@ -5,12 +5,12 @@
 namespace mudbase {
 
     LoginSM::LoginSM(PlayerConnection_ptr connection)
-            : internal_(new LoginSMInternal(connection)) {
+            : internal_(createLoginSMInternal(connection)) {
 
     }
 
     std::string LoginSM::do_state_step() {
-        return internal_->do_state_step();
+        return doStateStep(internal_);
     }
 
 }

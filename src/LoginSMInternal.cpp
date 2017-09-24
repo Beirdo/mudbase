@@ -1,6 +1,8 @@
 #include <iostream>
 #include <string>
 
+#include <boost/noncopyable.hpp>
+#include <boost/enable_shared_from_this.hpp>
 #include <boost/shared_ptr.hpp>
 #include <boost/sml.hpp>
 
@@ -21,13 +23,19 @@ struct e1 {
 
 auto input = sml::event<e1>;
 
-struct transitions {
+std::string &getLine(mudbase::LoginSMInternal *parent);
+char getFirstChar(mudbase::LoginSMInternal *parent);
+void writeToChar(mudbase::LoginSMInternal *parent, std::string line,
+                 bool noCR = false);
+
+struct table {
     auto operator()() const noexcept {
         using namespace sml;
 
         // Guard functions
         auto empty_input = [](const e1& e) {
-            return e.parent->line().empty();
+            std::string &line = getLine(e.parent);
+            return line.empty();
         };
         auto email_exists = [](const e1& e) { return true; };
         auto admin_blocked = [](const e1& e) { return false; };
@@ -37,7 +45,7 @@ struct transitions {
         auto is_confirmed = [](const e1& e) { return true; };
 
         auto input_is = [](const e1& e, char ch) {
-            return e.parent->first_char() == ch;
+            return getFirstChar(e.parent) == ch;
         };
         
         auto is_1 = [&](const e1& e) { return input_is(e, '1'); };
@@ -62,7 +70,7 @@ struct transitions {
 
         auto invalid_menu_choice = [](const e1& e, const char *valid) {
             int len = (valid ? strlen(valid) : 0);
-            char choice = e.parent->first_char();
+            char choice = getFirstChar(e.parent);
             for (int i; i < len; i++ ) {
                 if (valid[i] == choice) {
                     return false;
@@ -119,7 +127,7 @@ struct transitions {
 
         // Entry functions
         auto enter_disconnect = [](const e1& e) {
-            e.parent->write("Goodbye.");
+            writeToChar(e.parent, "Goodbye.");
         };
         auto enter_playing = [](const e1& e) { };
         auto enter_get_email = [](const e1& e) { };
@@ -133,7 +141,7 @@ struct transitions {
         auto enter_show_wmotd = [](const e1& e) { };
         auto enter_show_credits = [](const e1& e) { };
         auto enter_press_enter = [](const e1& e) {
-            e.parent->write("Press enter to continue.");
+            writeToChar(e.parent, "Press enter to continue.");
         };
         auto enter_show_account_menu = [](const e1& e) { };
         auto enter_show_player_list = [](const e1& e) { };
@@ -285,31 +293,64 @@ struct transitions {
     }
 };
 
-typedef sml::sm<transitions> FSM;
+namespace mudbase {
+
+    class LoginSMInternal
+            : public boost::enable_shared_from_this<LoginSMInternal>,
+              private boost::noncopyable {
+    public:
+        LoginSMInternal(PlayerConnection_ptr connection);
+        const char *state_name();
+
+        std::string do_state_step();
+        std::string &line();
+        char first_char();
+        void write(std::string line, bool noCR = false);
+
+    private:
+        sml::sm<table> fsm_;
+        PlayerConnection_ptr connection_;
+        std::string line_;
+        char ch_;
+    };
+
+}
+
+std::string &getLine(mudbase::LoginSMInternal *parent) {
+    return parent->line();
+}
+
+char getFirstChar(mudbase::LoginSMInternal *parent) {
+    return parent->first_char();
+}
+
+void writeToChar(mudbase::LoginSMInternal *parent, std::string line,
+                 bool noCR) {
+    parent->write(line, noCR);
+}
 
 namespace mudbase {
 
+    LoginSMInternal_ptr createLoginSMInternal(PlayerConnection_ptr connection) {
+        return LoginSMInternal_ptr(new LoginSMInternal(connection));
+    }
+
+    std::string doStateStep(LoginSMInternal_ptr internal_) {
+        return internal_->do_state_step();
+    }
 
     LoginSMInternal::LoginSMInternal(PlayerConnection_ptr connection)
-            : connection_(connection), fsm_(new FSM) {
-        FSM *pFsm = static_cast<FSM *>(fsm_);
+            : connection_(connection), fsm_() {
         std::cout << "At start: " << state_name() << std::endl;
     }
 
-    LoginSMInternal::~LoginSMInternal() {
-        FSM *pFsm = static_cast<FSM *>(fsm_);
-        delete pFsm;
-    }
-
     const char *LoginSMInternal::state_name() {
-        FSM *pFsm = static_cast<FSM *>(fsm_);
         const char *name;
-        pFsm->visit_current_states([&](auto state) { name = state.c_str(); });
+        fsm_.visit_current_states([&](auto state) { name = state.c_str(); });
         return name;
     }
 
     std::string LoginSMInternal::do_state_step() {
-        FSM *pFsm = static_cast<FSM *>(fsm_);
         std::cout << "Before state: " << state_name() << std::endl;
 
         // Get the input line
@@ -319,7 +360,7 @@ namespace mudbase {
         ch_ = tolower(line_.c_str()[0]);
 
         // Process the input
-        pFsm->process_event(e1{this});
+        fsm_.process_event(e1{this});
         std::cout << "After state: " << state_name() << std::endl;
 
         // Return new state name
