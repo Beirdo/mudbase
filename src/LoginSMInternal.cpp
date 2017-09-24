@@ -10,18 +10,16 @@
 #include "LoginSMInternal.h"
 #include "util.h"
 
-#pragma clang diagnostic push
-#pragma ide diagnostic ignored "TemplateArgumentsIssues"
-#pragma ide diagnostic ignored "CannotResolve"
-
 using namespace std;
 namespace sml = boost::sml;
 
-struct e1 {
-    mudbase::LoginSMInternal *parent;
-};
+struct e1 { };
 
 auto input = sml::event<e1>;
+
+struct dep {
+    mudbase::LoginSMInternal *parent;
+};
 
 std::string &getLine(mudbase::LoginSMInternal *parent);
 char getFirstChar(mudbase::LoginSMInternal *parent);
@@ -33,42 +31,42 @@ struct table {
         using namespace sml;
 
         // Guard functions
-        auto empty_input = [](const e1& e) {
+        auto empty_input = [](dep& e) {
             std::string &line = getLine(e.parent);
             return line.empty();
         };
-        auto email_exists = [](const e1& e) { return true; };
-        auto admin_blocked = [](const e1& e) { return false; };
-        auto create_password = [](const e1& e) { return true; };
-        auto match_password = [](const e1& e) { return true; };
-        auto confirm_sent = [](const e1& e) { return true; };
-        auto is_confirmed = [](const e1& e) { return true; };
+        auto email_exists = [](dep& e) { return true; };
+        auto admin_blocked = [](dep& e) { return false; };
+        auto create_password = [](dep& e) { return true; };
+        auto match_password = [](dep& e) { return true; };
+        auto confirm_sent = [](dep& e) { return true; };
+        auto is_confirmed = [](dep& e) { return true; };
 
-        auto input_is = [](const e1& e, char ch) {
+        auto input_is = [](dep& e, char ch) {
             return getFirstChar(e.parent) == ch;
         };
         
-        auto is_1 = [&](const e1& e) { return input_is(e, '1'); };
-        auto is_2 = [&](const e1& e) { return input_is(e, '2'); };
-        auto is_3 = [&](const e1& e) { return input_is(e, '3'); };
-        auto is_4 = [&](const e1& e) { return input_is(e, '4'); };
-        auto is_5 = [&](const e1& e) { return input_is(e, '5'); };
-        auto is_6 = [&](const e1& e) { return input_is(e, '6'); };
-        auto is_7 = [&](const e1& e) { return input_is(e, '7'); };
-        auto is_d = [&](const e1& e) { return input_is(e, 'd'); };
-        auto is_e = [&](const e1& e) { return input_is(e, 'e'); };
-        auto is_f = [&](const e1& e) { return input_is(e, 'f'); };
-        auto is_g = [&](const e1& e) { return input_is(e, 'g'); };
-        auto is_m = [&](const e1& e) { return input_is(e, 'm'); };
-        auto is_n = [&](const e1& e) { return input_is(e, 'n'); };
-        auto is_q = [&](const e1& e) { return input_is(e, 'q'); };
-        auto is_r = [&](const e1& e) { return input_is(e, 'r'); };
-        auto is_y = [&](const e1& e) { return input_is(e, 'y'); };
+        auto is_1 = [&](dep& e) { return input_is(e, '1'); };
+        auto is_2 = [&](dep& e) { return input_is(e, '2'); };
+        auto is_3 = [&](dep& e) { return input_is(e, '3'); };
+        auto is_4 = [&](dep& e) { return input_is(e, '4'); };
+        auto is_5 = [&](dep& e) { return input_is(e, '5'); };
+        auto is_6 = [&](dep& e) { return input_is(e, '6'); };
+        auto is_7 = [&](dep& e) { return input_is(e, '7'); };
+        auto is_d = [&](dep& e) { return input_is(e, 'd'); };
+        auto is_e = [&](dep& e) { return input_is(e, 'e'); };
+        auto is_f = [&](dep& e) { return input_is(e, 'f'); };
+        auto is_g = [&](dep& e) { return input_is(e, 'g'); };
+        auto is_m = [&](dep& e) { return input_is(e, 'm'); };
+        auto is_n = [&](dep& e) { return input_is(e, 'n'); };
+        auto is_q = [&](dep& e) { return input_is(e, 'q'); };
+        auto is_r = [&](dep& e) { return input_is(e, 'r'); };
+        auto is_y = [&](dep& e) { return input_is(e, 'y'); };
 
         static const char valid_account_menu_choices[] = "";
         static const char valid_creation_menu_choices[] = "";
 
-        auto invalid_menu_choice = [](const e1& e, const char *valid) {
+        auto invalid_menu_choice = [](dep& e, const char *valid) {
             int len = (valid ? strlen(valid) : 0);
             char choice = getFirstChar(e.parent);
             for (int i; i < len; i++ ) {
@@ -79,90 +77,90 @@ struct table {
             return true;
         };
 
-        auto invalid_account_menu_choice = [&](const e1& e) {
+        auto invalid_account_menu_choice = [&](dep& e) {
             return invalid_menu_choice(e, valid_account_menu_choices);
         };
 
-        auto invalid_creation_menu_choice = [&](const e1& e) {
+        auto invalid_creation_menu_choice = [&](dep& e) {
             return invalid_menu_choice(e, valid_creation_menu_choices);
         };
 
-        auto new_password = [](const e1& e) { return true; };
-        auto match_new_password = [](const e1& e) { return true; };
-        auto match_confirm_code = [](const e1& e) { return true; };
-        auto class_set = [](const e1& e) { return true; };
-        auto character_complete = [](const e1& e) { return true; };
-        auto name_available = [](const e1& e) { return true; };
-        auto name_banned = [](const e1& e) { return false; };
+        auto new_password = [](dep& e) { return true; };
+        auto match_new_password = [](dep& e) { return true; };
+        auto match_confirm_code = [](dep& e) { return true; };
+        auto class_set = [](dep& e) { return true; };
+        auto character_complete = [](dep& e) { return true; };
+        auto name_available = [](dep& e) { return true; };
+        auto name_banned = [](dep& e) { return false; };
 
         // Actions
-        auto save_new_email = [](const e1& e) { };
-        auto save_email = [](const e1& e) { };
-        auto save_password = [](const e1& e) { };
-        auto passwords_no_match = [](const e1& e) { };
-        auto set_ansi = [](const e1& e) { };
-        auto show_motd = [](const e1& e) { };
-        auto show_wmotd = [](const e1& e) { };
-        auto show_credits = [](const e1& e) { };
-        auto invalid_choice = [](const e1& e) { };
-        auto show_player_list = [](const e1& e) { };
-        auto save_new_password = [](const e1& e) { };
-        auto save_confirmed = [](const e1& e) { };
-        auto save_unconfirmed = [](const e1& e) { };
-        auto reset_reroll = [](const e1& e) { };
-        auto select_class = [](const e1& e) { };
-        auto save_new_character = [](const e1& e) { };
-        auto show_missing = [](const e1& e) { };
-        auto show_name_taken = [](const e1& e) { };
-        auto show_name_banned = [](const e1& e) { };
-        auto abort_new_name = [](const e1& e) { };
-        auto save_new_name = [](const e1& e) { };
-        auto save_sex_male = [](const e1& e) { };
-        auto save_sex_female = [](const e1& e) { };
-        auto save_sex_neutral = [](const e1& e) { };
-        auto save_alignment_neutral = [](const e1& e) { };
-        auto save_alignment_good = [](const e1& e) { };
-        auto save_alignment_evil = [](const e1& e) { };
-        auto not_implemented_yet = [](const e1& e) { };
+        auto save_new_email = [](dep& e) { };
+        auto save_email = [](dep& e) { };
+        auto save_password = [](dep& e) { };
+        auto passwords_no_match = [](dep& e) { };
+        auto set_ansi = [](dep& e) { };
+        auto show_motd = [](dep& e) { };
+        auto show_wmotd = [](dep& e) { };
+        auto show_credits = [](dep& e) { };
+        auto invalid_choice = [](dep& e) { };
+        auto show_player_list = [](dep& e) { };
+        auto save_new_password = [](dep& e) { };
+        auto save_confirmed = [](dep& e) { };
+        auto save_unconfirmed = [](dep& e) { };
+        auto reset_reroll = [](dep& e) { };
+        auto select_class = [](dep& e) { };
+        auto save_new_character = [](dep& e) { };
+        auto show_missing = [](dep& e) { };
+        auto show_name_taken = [](dep& e) { };
+        auto show_name_banned = [](dep& e) { };
+        auto abort_new_name = [](dep& e) { };
+        auto save_new_name = [](dep& e) { };
+        auto save_sex_male = [](dep& e) { };
+        auto save_sex_female = [](dep& e) { };
+        auto save_sex_neutral = [](dep& e) { };
+        auto save_alignment_neutral = [](dep& e) { };
+        auto save_alignment_good = [](dep& e) { };
+        auto save_alignment_evil = [](dep& e) { };
+        auto not_implemented_yet = [](dep& e) { };
 
         // Entry functions
-        auto enter_disconnect = [](const e1& e) {
+        auto enter_disconnect = [](dep& e) {
             writeToChar(e.parent, "Goodbye.");
         };
-        auto enter_playing = [](const e1& e) { };
-        auto enter_get_email = [](const e1& e) { };
-        auto enter_confirm_email = [](const e1& e) { };
-        auto enter_resend_confirm_email = [](const e1& e) { };
-        auto enter_get_new_user_password = [](const e1& e) { };
-        auto enter_confirm_password = [](const e1& e) { };
-        auto enter_get_password = [](const e1& e) { };
-        auto enter_choose_ansi = [](const e1& e) { };
-        auto enter_show_motd = [](const e1& e) { };
-        auto enter_show_wmotd = [](const e1& e) { };
-        auto enter_show_credits = [](const e1& e) { };
-        auto enter_press_enter = [](const e1& e) {
+        auto enter_playing = [](dep& e) { };
+        auto enter_get_email = [](dep& e) { };
+        auto enter_confirm_email = [](dep& e) { };
+        auto enter_resend_confirm_email = [](dep& e) { };
+        auto enter_get_new_user_password = [](dep& e) { };
+        auto enter_confirm_password = [](dep& e) { };
+        auto enter_get_password = [](dep& e) { };
+        auto enter_choose_ansi = [](dep& e) { };
+        auto enter_show_motd = [](dep& e) { };
+        auto enter_show_wmotd = [](dep& e) { };
+        auto enter_show_credits = [](dep& e) { };
+        auto enter_press_enter = [](dep& e) {
             writeToChar(e.parent, "Press enter to continue.");
         };
-        auto enter_show_account_menu = [](const e1& e) { };
-        auto enter_show_player_list = [](const e1& e) { };
-        auto enter_get_new_password = [](const e1& e) { };
-        auto enter_confirm_new_password = [](const e1& e) { };
-        auto enter_get_confirm_code = [](const e1& e) { };
-        auto enter_show_creation_menu = [](const e1& e) { };
-        auto enter_choose_name = [](const e1& e) { };
-        auto enter_choose_sex = [](const e1& e) { };
-        auto enter_reroll_abilities = [](const e1& e) { };
-        auto enter_choose_alignment = [](const e1& e) { };
-        auto enter_choose_race = [](const e1& e) { };
-        auto enter_choose_stats = [](const e1& e) { };
-        auto enter_choose_class = [](const e1& e) { };
-        auto enter_wait_for_auth = [](const e1& e) { };
-        auto enter_delete_user = [](const e1& e) { };
-        auto enter_show_login_menu = [](const e1& e) { };
-        auto enter_edit_extra_descr = [](const e1& e) { };
+        auto enter_show_account_menu = [](dep& e) { };
+        auto enter_show_player_list = [](dep& e) { };
+        auto enter_get_new_password = [](dep& e) { };
+        auto enter_confirm_new_password = [](dep& e) { };
+        auto enter_get_confirm_code = [](dep& e) { };
+        auto enter_show_creation_menu = [](dep& e) { };
+        auto enter_choose_name = [](dep& e) { };
+        auto enter_choose_sex = [](dep& e) { };
+        auto enter_reroll_abilities = [](dep& e) { };
+        auto enter_choose_alignment = [](dep& e) { };
+        auto enter_choose_race = [](dep& e) { };
+        auto enter_choose_stats = [](dep& e) { };
+        auto enter_choose_class = [](dep& e) { };
+        auto enter_wait_for_auth = [](dep& e) { };
+        auto enter_delete_user = [](dep& e) { };
+        auto enter_show_login_menu = [](dep& e) { };
+        auto enter_edit_extra_descr = [](dep& e) { };
 
         // exit functions
-        auto initialize = [](const e1& e) { };
+        auto initialize = [](dep& e) { };
 
         // clang-format off
         return make_transition_table(
@@ -308,6 +306,7 @@ namespace mudbase {
         void write(std::string line, bool noCR = false);
 
     private:
+        dep dep_;
         sml::sm<table> fsm_;
         PlayerConnection_ptr connection_;
         std::string line_;
@@ -340,7 +339,7 @@ namespace mudbase {
     }
 
     LoginSMInternal::LoginSMInternal(PlayerConnection_ptr connection)
-            : connection_(connection), fsm_() {
+            : connection_(connection), dep_{this}, fsm_(sml::sm<table>{dep_}) {
         std::cout << "At start: " << state_name() << std::endl;
     }
 
@@ -360,7 +359,7 @@ namespace mudbase {
         ch_ = tolower(line_.c_str()[0]);
 
         // Process the input
-        fsm_.process_event(e1{this});
+        fsm_.process_event(e1{});
         std::cout << "After state: " << state_name() << std::endl;
 
         // Return new state name
@@ -380,7 +379,5 @@ namespace mudbase {
     }
 
 }
-
-#pragma clang diagnostic pop
 
 // vim:ts=4:sw=4:ai:et:si:sts=4
