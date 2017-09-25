@@ -19,6 +19,7 @@
 #include "ThreadNetworkManager.h"
 #include "TCPConnectionManager.h"
 #include "Scheduler.h"
+#include "AWSBase.h"
 #include "main.h"
 
 namespace mudbase {
@@ -27,8 +28,10 @@ namespace mudbase {
     ThreadManager thread_manager;
     TCPConnectionManager connection_manager;
     std::thread::id main_thread;
+    AWSBase aws_api;
 
     void term_handler() {
+        aws_api.shutdown();
         std::_Exit(0);
     }
 

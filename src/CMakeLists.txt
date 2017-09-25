@@ -16,4 +16,6 @@ list(APPEND Mudbase_SOURCES
 	"${CMAKE_CURRENT_LIST_DIR}/ThreadNetworkManager.cpp"
         "${CMAKE_CURRENT_LIST_DIR}/LoginSM.cpp"
         "${CMAKE_CURRENT_LIST_DIR}/LoginSMInternal.cpp"
+	"${CMAKE_CURRENT_LIST_DIR}/AWSBase.cpp"
+	"${CMAKE_CURRENT_LIST_DIR}/AWSDynamoDB.cpp"
 )

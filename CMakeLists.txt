@@ -5,6 +5,7 @@ cmake_minimum_required(VERSION 3.7)
 #set(aws-sdk-cpp_DIR build-aws)
 #find_package(aws-sdk-cpp)
 find_library(DYNAMODB_LIB NAME aws-cpp-sdk-dynamodb PATHS /usr/local/lib)
+find_library(AWSCORE_LIB NAME aws-cpp-sdk-core PATHS /usr/local/lib)
 
 add_subdirectory(boost-cmake)
 
@@ -36,7 +37,9 @@ include_directories("${PROJECT_BINARY_DIR}" "${PROJECT_SOURCE_DIR}"
 
 add_executable(Mudbase ${Mudbase_SOURCES})
 add_library(DYNAMODB_LIB SHARED IMPORTED)
+add_library(AWSCORE_LIB SHARED IMPORTED)
 target_link_libraries(Mudbase Boost::system)
 target_link_libraries(Mudbase Boost::boost)
 target_link_libraries(Mudbase Boost::fiber)
 target_link_libraries(Mudbase aws-cpp-sdk-dynamodb)
+target_link_libraries(Mudbase aws-cpp-sdk-core)
