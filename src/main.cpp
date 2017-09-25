@@ -30,9 +30,12 @@ namespace mudbase {
 
     void term_handler() {
         std::_Exit(0);
-    };
+    }
 
     int main(int argc, char *argv[]) {
+        (void)argc;
+        (void)argv;
+
         std::cout << "main thread started " << std::this_thread::get_id()
                   << std::endl;
 

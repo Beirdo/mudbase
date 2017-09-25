@@ -4,3 +4,6 @@
 [submodule "sml"]
 	path = sml
 	url = https://github.com/boost-experimental/sml.git
+[submodule "aws-sdk-cpp"]
+	path = aws-sdk-cpp
+	url = https://github.com/aws/aws-sdk-cpp.git
