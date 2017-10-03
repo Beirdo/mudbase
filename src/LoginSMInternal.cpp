@@ -127,29 +127,78 @@ struct table {
         auto save_alignment_neutral = [](dep& e) { };
         auto save_alignment_good = [](dep& e) { };
         auto save_alignment_evil = [](dep& e) { };
-        auto not_implemented_yet = [](dep& e) { };
+
+        auto not_implemented_yet = [](dep& e) {
+            writeToChar(e.parent, "Feature not implemented yet.\n");
+        };
 
         // Entry functions
         auto enter_disconnect = [](dep& e) {
             writeToChar(e.parent, "Goodbye.");
         };
+        
         auto enter_playing = [](dep& e) { };
+
         auto enter_get_email = [](dep& e) {
             writeToChar(e.parent, "Please enter your email: ", true);
         };
-        auto enter_confirm_email = [](dep& e) { };
-        auto enter_resend_confirm_email = [](dep& e) { };
-        auto enter_get_new_user_password = [](dep& e) { };
-        auto enter_confirm_password = [](dep& e) { };
-        auto enter_get_password = [](dep& e) { };
-        auto enter_choose_ansi = [](dep& e) { };
-        auto enter_show_motd = [](dep& e) { };
-        auto enter_show_wmotd = [](dep& e) { };
-        auto enter_show_credits = [](dep& e) { };
+
+        auto enter_confirm_email = [](dep& e) {
+            writeToChar(e.parent, "Did I get that right, %s (Y/N)? ", true,
+                        e.parent->email);
+        };
+
+        auto enter_resend_confirm_email = [](dep& e) {
+            if (confirm_sent(e)) {
+                writeToChar(e.parent, "Resending your confirmation email...");
+            } else {
+                writeToChar(e.parent, "Sending your confirmation email...");
+            }}
+        };
+
+        auto enter_get_new_user_password = [](dep& e) {
+            writeToChar(e.parent, "Give me a password for %s: ", true,
+                        e.parent->email);
+            writeRawToChar(e.parent, echo_off, 4);
+        };
+
+        auto enter_confirm_password = [](dep& e) {
+            writeToChar(e.parent, "Please retype password: ", true);
+            writeRawToChar(e.parent, echo_off, 4);
+        };
+
+        auto enter_get_password = [](dep& e) {
+            writeToChar(e.parent, "Password: ", true);
+            writeRawToChar(e.parent, echo_off, 4);
+        };
+
+        auto enter_choose_ansi = [](dep& e) {
+            writeToChar(e.parent, "Would you like ANSI colors (Y/N)? ", true);
+        };
+
         auto enter_press_enter = [](dep& e) {
             writeToChar(e.parent, "Press enter to continue.");
         };
-        auto enter_show_account_menu = [](dep& e) { };
+
+        auto enter_show_account_menu = [](dep& e) {
+            writeToChar(e.parent, "\n\n$c0009-=$c0015BeirdoMud Account Menu "
+                                  "[%s]$c009=-\n", false, e.parent->email);
+            writeToChar(e.parent, "$c00151) $c0012ANSI Colors");
+            writeToChar(e.parent, "$c00152) $c0012Change your password");
+            writeToChar(e.parent, "$c00153) $c0012View the MOTD");
+            writeToChar(e.parent, "$c00154) $c0012View the credits");
+            if (is_confirmed(e)) {
+                writeToChar(e.parent, "$c00155) $c0012List characters");
+                writeToChar(e.parent, "$c00156) $c0012Create a new character");
+                writeToChar(e.parent, "$c00157) $c0012Play an existing character");
+            } else {
+                writeToChar(e.parent, "$c0015E) $c0012Enter email confirmation code");
+                writeToChar(e.parent, "$c0015R) $c0012Resent the confirmation email");
+            }
+            writeToChar(e.parent, "$c0015Q) $c0012Quit!\n");
+            writeToChar(e.parent, "$c0011Please pick an option: ", true);
+        };
+
         auto enter_show_player_list = [](dep& e) { };
         auto enter_get_new_password = [](dep& e) { };
         auto enter_confirm_new_password = [](dep& e) { };
@@ -202,13 +251,13 @@ struct table {
             "Choose_Ansi"_s + sml::on_entry<_> / enter_choose_ansi,
 
             "Show_Motd"_s + input / show_motd = "Show_Account_Menu"_s,
-            "Show_Motd"_s + sml::on_entry<_> / enter_show_motd,
+            "Show_Motd"_s + sml::on_entry<_> / not_implemented_yet,
 
             "Show_Wmotd"_s + input / show_wmotd = "Show_Account_Menu"_s,
-            "Show_Wmotd"_s + sml::on_entry<_> / enter_show_wmotd,
+            "Show_Wmotd"_s + sml::on_entry<_> / not_implemented_yet,
 
             "Show_Credits"_s + input / show_credits = "Show_Account_Menu"_s,
-            "Show_Credits"_s + sml::on_entry<_> / enter_show_credits,
+            "Show_Credits"_s + sml::on_entry<_> / not_implemented_yet,
 
             "Press_Enter"_s + input = "Show_Login_Menu"_s,
             "Press_Enter"_s + sml::on_entry<_> / enter_press_enter,
